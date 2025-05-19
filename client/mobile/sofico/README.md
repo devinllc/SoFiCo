@@ -1,6 +1,6 @@
 # sofico
 
-A Flutter Fintech
+A new Flutter project.
 
 ## Getting Started
 
