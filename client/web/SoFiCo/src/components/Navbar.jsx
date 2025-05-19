@@ -1,52 +1,18 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import './Navbar.css';
+import React from 'react'
 
-function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <nav className="navbar">
-      <div className="navbar-container">
-        <Link to="/" className="navbar-logo">
-          <img src="/logo.png" alt="SoFiCo Logo" className="logo-img" />
-          <span className="logo-text">SoFiCo</span>
-        </Link>
-
-        <div className="menu-icon" onClick={() => setIsOpen(!isOpen)}>
-          <i className={isOpen ? 'fas fa-times' : 'fas fa-bars'} />
-        </div>
-
-        <ul className={isOpen ? 'nav-menu active' : 'nav-menu'}>
-          <li className="nav-item">
-            <Link to="/" className="nav-link" onClick={() => setIsOpen(false)}>
-              Home
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/about" className="nav-link" onClick={() => setIsOpen(false)}>
-              About
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/services" className="nav-link" onClick={() => setIsOpen(false)}>
-              Services
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/login" className="nav-link login-btn" onClick={() => setIsOpen(false)}>
-              Login
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/register" className="nav-link register-btn" onClick={() => setIsOpen(false)}>
-              Register
-            </Link>
-          </li>
+export default function Navbar() {
+    return (
+      <nav className="flex justify-between items-center py-6 px-8 bg-transparent">
+        <div className="text-2xl font-bold text-green-400">Upgrade</div>
+        <ul className="flex space-x-8 text-white font-medium">
+          <li>Personal Loan</li>
+          <li>One Card</li>
+          <li>Savings</li>
+          <li>Checking</li>
+          <li>Help</li>
         </ul>
-      </div>
-    </nav>
-  );
+        <button className="border border-white rounded-lg px-6 py-2 text-white hover:bg-green-400 hover:text-gray-900 transition">Sign In</button>
+      </nav>
+    );
 }
-
-export default Navbar;
+  
