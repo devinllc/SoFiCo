@@ -1,4 +1,5 @@
 import React from "react";
+import logo from '../assets/Sofico.svg'
 
 const FooterSection = () => {
   return (
@@ -7,8 +8,7 @@ const FooterSection = () => {
         {/* Logo */}
         <div className="flex items-center mb-2">
           {/* Replace with your logo */}
-          <span className="text-4xl font-bold text-green-700 mr-2">S</span>
-          <span className="text-2xl font-bold text-gray-800">oFiCo</span>
+          <div className="mb-5 w-30 h-8"><img src={logo} className='object-fit object-contain' /></div>
         </div>
         {/* App Store Buttons */}
         <div className="flex gap-3 mb-4">
