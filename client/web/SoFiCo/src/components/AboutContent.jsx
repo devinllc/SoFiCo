@@ -1,53 +1,86 @@
-import React from 'react'
+import React from "react";
 
-const AboutContent = () => (
-  <div className="flex flex-col gap-4">
-    {/* Tag */}
-    <div className="flex items-center gap-2">
-      <span className="bg-[#f3f4f6] px-3 py-1 rounded-full text-xs font-semibold flex items-center">
-        <span className="text-yellow-500 text-lg mr-1">🔥</span> ABOUT US
-      </span>
-    </div>
-    {/* Heading */}
-    <h2 className="text-3xl md:text-5xl font-extrabold text-gray-900 leading-tight mt-2 mb-4">
-      ALL YOUR MONEY <br /> NEEDS IN ONE APP
-    </h2>
-    {/* Features List */}
-    <div className="flex flex-col gap-4 mt-2">
-      {/* Expenses Tracker */}
-      <div className="bg-[#ebf9e5] border-l-4 border-[#1bbf00] rounded-xl p-4">
-        <div className="font-bold text-lg mb-1">Group Saving Pools</div>
-        <div className="text-gray-700 text-sm">
-          Save together seamlessly for shared financial goals.
+function AboutContent() {
+  return (
+    <section className="w-full py-16 bg-gray-50">
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Platform Architecture</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            SoFiCo is built on a modern, scalable architecture that ensures security, performance, and reliability.
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {/* Frontend */}
+          <div className="bg-white p-6 rounded-xl shadow-sm">
+            <h3 className="text-xl font-semibold mb-4 text-gray-900">Frontend</h3>
+            <ul className="space-y-2 text-gray-600">
+              <li>• React-based responsive web interface</li>
+              <li>• Role-based dashboards (User/Agent/Admin)</li>
+              <li>• Real-time updates and notifications</li>
+              <li>• Secure authentication system</li>
+            </ul>
+          </div>
+
+          {/* Backend Services */}
+          <div className="bg-white p-6 rounded-xl shadow-sm">
+            <h3 className="text-xl font-semibold mb-4 text-gray-900">Backend Services</h3>
+            <ul className="space-y-2 text-gray-600">
+              <li>• Microservices architecture</li>
+              <li>• User & Agent management</li>
+              <li>• Wallet & Transaction processing</li>
+              <li>• Loan & Scheme management</li>
+            </ul>
+          </div>
+
+          {/* Security */}
+          <div className="bg-white p-6 rounded-xl shadow-sm">
+            <h3 className="text-xl font-semibold mb-4 text-gray-900">Security</h3>
+            <ul className="space-y-2 text-gray-600">
+              <li>• Role-based access control</li>
+              <li>• End-to-end encryption</li>
+              <li>• Secure payment processing</li>
+              <li>• Audit logging system</li>
+            </ul>
+          </div>
+
+          {/* Features */}
+          <div className="bg-white p-6 rounded-xl shadow-sm">
+            <h3 className="text-xl font-semibold mb-4 text-gray-900">Key Features</h3>
+            <ul className="space-y-2 text-gray-600">
+              <li>• Digital wallet management</li>
+              <li>• Loan application & tracking</li>
+              <li>• Group scheme management</li>
+              <li>• Real-time notifications</li>
+            </ul>
+          </div>
+
+          {/* User Roles */}
+          <div className="bg-white p-6 rounded-xl shadow-sm">
+            <h3 className="text-xl font-semibold mb-4 text-gray-900">User Roles</h3>
+            <ul className="space-y-2 text-gray-600">
+              <li>• User: Apply loans, join schemes</li>
+              <li>• Agent: Manage users, approve loans</li>
+              <li>• Admin: System-wide management</li>
+              <li>• Custom permissions system</li>
+            </ul>
+          </div>
+
+          {/* Integration */}
+          <div className="bg-white p-6 rounded-xl shadow-sm">
+            <h3 className="text-xl font-semibold mb-4 text-gray-900">Integrations</h3>
+            <ul className="space-y-2 text-gray-600">
+              <li>• Payment gateways</li>
+              <li>• SMS/Email services</li>
+              <li>• KYC verification</li>
+              <li>• Analytics & reporting</li>
+            </ul>
+          </div>
         </div>
       </div>
-      {/* Crypto Connection */}
-      <div className="bg-white border border-gray-200 rounded-xl p-4">
-        <div className="font-bold text-lg mb-1 text-gray-900">Peer-to-Peer Loans
-</div>
-        <div className="text-gray-700 text-sm">
-          Trust-based micro-lending among verified users.
-        </div>
-      </div>
-      {/* Automated Invoicing */}
-      <div className="bg-white border border-gray-200 rounded-xl p-4">
-        <div className="font-bold text-lg mb-1 text-gray-900">Social Investing</div>
-        <div className="text-gray-700 text-sm">
-          Invest with friends in ethical portfolios.
-        </div>
-      </div>
+    </section>
+  );
+}
 
-      <div className="bg-white border border-gray-200 rounded-xl p-4">
-        <div className="font-bold text-lg mb-1 text-gray-900">Accountability Circles
-</div>
-        <div className="text-gray-700 text-sm">
-          Gamified progress tracking with social nudges.
-        </div>
-      </div>
-
-
-    </div>
-  </div>
-);
-
-export default AboutContent
+export default AboutContent;
