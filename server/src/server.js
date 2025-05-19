@@ -14,5 +14,5 @@ app.listen(PORT, () => {
 process.on('unhandledRejection', (err) => {
     logger.error('Unhandled Rejection:', err);
     // In production, you might want to exit and let your process manager restart the app
-    // process.exit(1);
+    process.exit(1);
 });
