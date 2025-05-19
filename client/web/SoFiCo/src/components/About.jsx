@@ -1,6 +1,6 @@
 import React from "react";
 
-function About() {
+function FeaturedSection(){
   return (
     <section className="w-full py-12 bg-white flex flex-col items-center">
       <div className="max-w-6xl w-full flex flex-col md:flex-row items-center justify-between px-4 gap-10">
@@ -10,34 +10,20 @@ function About() {
           <div className="flex items-center mb-4">
             <span className="flex items-center bg-gray-100 px-3 py-1 rounded-full text-xs font-semibold">
               <span className="text-yellow-500 text-lg mr-1">🔥</span>
-              ABOUT SOFICO
+              ABOUT
             </span>
           </div>
           {/* Heading */}
           <h2 className="text-3xl md:text-5xl font-extrabold text-gray-900 mb-6 leading-tight">
-            COMPREHENSIVE FINANCIAL <br className="hidden md:block" /> SOLUTIONS PLATFORM
+            ALL THE FEATURES <br className="hidden md:block" /> IN ONE APP
           </h2>
           {/* List */}
-          <ul className="mb-8 space-y-3 text-gray-600 text-base">
-            <li className="flex items-start">
-              <span className="text-green-500 mr-2">•</span>
-              <span>Multi-role platform supporting Users, Agents, and Administrators with role-specific dashboards</span>
+          <ul className="mb-8 space-y-2 text-gray-600 text-base">
+            <li>
+              • Get 3% Cash Back On Everyday Purchases, 2% On Everything Else
             </li>
-            <li className="flex items-start">
-              <span className="text-green-500 mr-2">•</span>
-              <span>Integrated Wallet System with secure transactions and withdrawal management</span>
-            </li>
-            <li className="flex items-start">
-              <span className="text-green-500 mr-2">•</span>
-              <span>Advanced Loan Management System with application tracking and approval workflows</span>
-            </li>
-            <li className="flex items-start">
-              <span className="text-green-500 mr-2">•</span>
-              <span>Collaborative Scheme Management for group financial activities</span>
-            </li>
-            <li className="flex items-start">
-              <span className="text-green-500 mr-2">•</span>
-              <span>Real-time Notifications and Updates across all services</span>
+            <li>
+              • Extra Spending Power When You Have Rewards Checking Through Upgrade
             </li>
           </ul>
           {/* Button */}
@@ -65,13 +51,13 @@ function About() {
             {/* Mobile 1 */}
             <img
               src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=300&q=80"
-              alt="User Dashboard"
+              alt="App Screenshot 1"
               className="w-40 h-80 object-cover rounded-xl shadow-lg"
             />
             {/* Mobile 2 */}
             <img
               src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=300&q=80"
-              alt="Agent Dashboard"
+              alt="App Screenshot 2"
               className="w-40 h-80 object-cover rounded-xl shadow-lg hidden md:block"
             />
           </div>
@@ -79,6 +65,6 @@ function About() {
       </div>
     </section>
   );
-}
+};
 
-export default About;
+export default FeaturedSection;
