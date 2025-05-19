@@ -1,0 +1,25 @@
+{
+  "name": "sofico",
+  "version": "1.0.0",
+  "description": "Fintech by Team Ufdevs",
+  "main": "app.js",
+  "scripts": {
+    "test": "Test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/devinllc/SoFiCo.git"
+  },
+  "keywords": [
+    "FinTech",
+    "UFDevs",
+    "Ramesh",
+    "Abhiraj"
+  ],
+  "author": "Ramesh Vishwakarma & Abhishek Raj",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/devinllc/SoFiCo/issues"
+  },
+  "homepage": "https://github.com/devinllc/SoFiCo#readme"
+}
