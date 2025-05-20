@@ -8,9 +8,20 @@
     ],
     "routes": [
       {
-        "src": "/(.*)",
+        "src": "/",
+        "dest": "/app.js"
+      },
+      {
+        "src": "/auth/(.*)",
+        "dest": "/app.js"
+      },
+      {
+        "src": "/wallet/(.*)",
         "dest": "/app.js"
       }
-    ]
+    ],
+    "env": {
+      "NODE_ENV": "production"
+    }
   }
   
