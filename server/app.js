@@ -1,4 +1,41 @@
+// Add this at the very top of the file, before any other code
+process.on('uncaughtException', (error) => {
+    console.error('Uncaught Exception during startup:', error);
+    process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection during startup:', reason);
+    process.exit(1);
+});
+
+// Load environment variables with validation
 require('dotenv').config();
+
+// Validate required environment variables
+const requiredEnvVars = ['MONGODB_URI', 'JWT_SECRET'];
+const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
+
+if (missingEnvVars.length > 0) {
+    console.error('Missing required environment variables:', missingEnvVars);
+    process.exit(1);
+}
+
+// Log startup information
+console.log('Starting application with configuration:', {
+    NODE_ENV: process.env.NODE_ENV || 'not set',
+    NODE_VERSION: process.version,
+    PLATFORM: process.platform,
+    MEMORY_USAGE: process.memoryUsage(),
+    ENV_VARS: {
+        MONGODB_URI: process.env.MONGODB_URI ? 'Set' : 'Not set',
+        JWT_SECRET: process.env.JWT_SECRET ? 'Set' : 'Not set',
+        RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID ? 'Set' : 'Not set',
+        RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET ? 'Set' : 'Not set',
+        CLIENT_URL: process.env.CLIENT_URL || 'Not set'
+    }
+});
+
 const express = require("express");
 const path = require("path");
 const cors = require('cors');
@@ -40,16 +77,35 @@ const connectDB = async (retries = 3) => {
     for (let i = 0; i < retries; i++) {
         try {
             console.log(`Attempting MongoDB connection (attempt ${i + 1}/${retries})...`);
-            await mongoose.connect(process.env.MONGODB_URI, {
-                serverSelectionTimeoutMS: 5000, // 5 second timeout
-                socketTimeoutMS: 45000, // 45 second timeout
+            console.log('MongoDB URI format check:', {
+                hasProtocol: process.env.MONGODB_URI?.startsWith('mongodb://') || process.env.MONGODB_URI?.startsWith('mongodb+srv://'),
+                length: process.env.MONGODB_URI?.length || 0
             });
+            
+            await mongoose.connect(process.env.MONGODB_URI, {
+                serverSelectionTimeoutMS: 5000,
+                socketTimeoutMS: 45000,
+                connectTimeoutMS: 10000,
+                retryWrites: true,
+                retryReads: true
+            });
+            
             console.log('MongoDB Connected Successfully');
             return;
         } catch (err) {
-            console.error(`MongoDB connection attempt ${i + 1} failed:`, err);
-            if (i === retries - 1) throw err;
-            // Wait for 1 second before retrying
+            console.error(`MongoDB connection attempt ${i + 1} failed:`, {
+                name: err.name,
+                message: err.message,
+                code: err.code,
+                stack: err.stack
+            });
+            
+            if (i === retries - 1) {
+                console.error('All MongoDB connection attempts failed');
+                throw err;
+            }
+            
+            console.log(`Waiting 1 second before retry ${i + 2}...`);
             await new Promise(resolve => setTimeout(resolve, 1000));
         }
     }
@@ -59,14 +115,24 @@ const connectDB = async (retries = 3) => {
 app.get('/', async (req, res) => {
     try {
         const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
+        const systemInfo = {
+            uptime: process.uptime(),
+            memory: process.memoryUsage(),
+            nodeVersion: process.version,
+            platform: process.platform,
+            env: process.env.NODE_ENV
+        };
+        
         res.status(200).json({
             status: 'OK',
             message: 'API is Healthy',
             timestamp: new Date().toISOString(),
             environment: process.env.NODE_ENV,
+            system: systemInfo,
             database: {
                 status: dbStatus,
-                readyState: mongoose.connection.readyState
+                readyState: mongoose.connection.readyState,
+                host: mongoose.connection.host || 'not connected'
             },
             project: {
                 name: "SoFiCo",
@@ -81,11 +147,18 @@ app.get('/', async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Health check error:', error);
+        console.error('Health check error:', {
+            name: error.name,
+            message: error.message,
+            stack: error.stack,
+            code: error.code
+        });
+        
         res.status(500).json({
             status: 'ERROR',
             message: 'Health check failed',
-            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
+            timestamp: new Date().toISOString()
         });
     }
 });
@@ -141,15 +214,5 @@ if (process.env.NODE_ENV !== 'production') {
         console.log(`Server running on http://localhost:${PORT}`);
     });
 }
-
-// Handle uncaught exceptions
-process.on('uncaughtException', (error) => {
-    console.error('Uncaught Exception:', error);
-});
-
-// Handle unhandled promise rejections
-process.on('unhandledRejection', (reason, promise) => {
-    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-});
 
 module.exports = app;
