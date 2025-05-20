@@ -2,7 +2,8 @@ const express = require("express");
 const app = express();
 const cookieParser = require("cookie-parser");
 const path = require("path");
-
+const authRoutes= require('./routes/authRoutes');
+const walletRoutes= require('./routes/walletRoutes');
 const cors = require('cors');
 
 require("dotenv").config();
@@ -44,7 +45,9 @@ app.get("/", (req, res) => {
     });
 });
 
-
+// Routes
+app.use('/auth', authRoutes);
+app.use('/wallet', walletRoutes);
 // app.listen(3000);// ✅ Only start server if not on Vercel
 if (process.env.NODE_ENV !== 'production') {
     const PORT = process.env.PORT || 3000;
