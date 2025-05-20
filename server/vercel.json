@@ -3,25 +3,38 @@
     "builds": [
       {
         "src": "app.js",
-        "use": "@vercel/node"
+        "use": "@vercel/node",
+        "config": {
+          "maxLambdaSize": "15mb",
+          "runtime": "nodejs18.x"
+        }
       }
     ],
     "routes": [
       {
         "src": "/",
-        "dest": "/app.js"
+        "dest": "/app.js",
+        "methods": ["GET"]
       },
       {
         "src": "/auth/(.*)",
-        "dest": "/app.js"
+        "dest": "/app.js",
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
       },
       {
         "src": "/wallet/(.*)",
-        "dest": "/app.js"
+        "dest": "/app.js",
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
       }
     ],
     "env": {
       "NODE_ENV": "production"
+    },
+    "functions": {
+      "app.js": {
+        "memory": 1024,
+        "maxDuration": 10
+      }
     }
   }
   
