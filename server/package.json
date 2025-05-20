@@ -37,8 +37,8 @@
   },
   "devDependencies": {
     "@types/jest": "^29.5.0",
-    "@typescript-eslint/eslint-plugin": "7.0.0",
-    "@typescript-eslint/parser": "7.0.0",
+    "@typescript-eslint/eslint-plugin": "6.21.0",
+    "@typescript-eslint/parser": "6.21.0",
     "eslint": "8.56.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-jest": "^27.9.0",
@@ -51,7 +51,7 @@
     "supertest": "^6.3.3"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": "18.x"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
@@ -60,6 +60,8 @@
     ]
   },
   "resolutions": {
-    "eslint": "8.56.0"
+    "eslint": "8.56.0",
+    "@typescript-eslint/parser": "6.21.0",
+    "@typescript-eslint/eslint-plugin": "6.21.0"
   }
 }
