@@ -1,8 +1,25 @@
 import React from 'react'
+import Hero from './Hero';
+import About from './About'
+import FeaturedSection from './FeaturedSection'
+import TrustworthinessSection from './TrustworthinessSection'
+import DualCardFeatureSection  from './DualCardFeatureSection'
+import ThreeCardServicesSection from './ThreeCardServicesSection'
+import GetStartedSection from './GetStartedSection'
+import FooterSection from './FooterSection'
 
 function Home() {
   return (
-    <div>Home</div>
+    <div>
+      <Hero />
+      <About />
+      <FeaturedSection />
+      <TrustworthinessSection />
+      <DualCardFeatureSection />
+      <ThreeCardServicesSection />
+      <GetStartedSection />
+      <FooterSection />
+    </div>
   )
 }
 
