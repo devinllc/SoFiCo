@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import logo from '../assets/image.png';
 import { NavLink, Routes, Route } from 'react-router-dom';
 import Home from './Home';
-import LoginPage from './LoginPage';
 import Dashboard from './Dashboard'
-import AuthPage from './AuthPage';
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -125,7 +123,7 @@ export default function Navbar() {
           </div>
           {/* Sign In Button */}
           <NavLink
-            to="/login"
+            to="/"
             className={({ isActive }) =>
               `ml-4 px-5 py-2 rounded-full border border-white/40 font-semibold text-white transition-all duration-200
               bg-gradient-to-r from-green-400/90 to-green-500/80 shadow-md hover:from-green-300 hover:to-green-400 hover:text-[#0a3d4d]
@@ -198,7 +196,7 @@ export default function Navbar() {
         <Route path="/featured" element={<div className="pt-20">Featured Page</div>} />
         <Route path="/services" element={<div className="pt-20">Services Page</div>} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/login" element={<AuthPage />} />
+        <Route path="/login" element={<div className="pt-20 />} />
       </Routes>
     </>
   );
