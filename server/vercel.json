@@ -1,62 +1,15 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "app.js",
-        "use": "@vercel/node",
-        "config": {
-          "maxLambdaSize": "15mb",
-          "runtime": "nodejs18.x",
-          "includeFiles": [
-            ".env*"
-          ]
-        }
-      }
-    ],
-    "routes": [
-      {
-        "src": "/",
-        "dest": "/app.js",
-        "methods": ["GET"],
-        "headers": {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "GET",
-          "Access-Control-Allow-Headers": "Content-Type"
-        }
-      },
-      {
-        "src": "/auth/(.*)",
-        "dest": "/app.js",
-        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        "headers": {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type, Authorization"
-        }
-      },
-      {
-        "src": "/wallet/(.*)",
-        "dest": "/app.js",
-        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        "headers": {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type, Authorization"
-        }
-      }
-    ],
-    "env": {
-      "NODE_ENV": "production"
-    },
-    "functions": {
-      "app.js": {
-        "memory": 1024,
-        "maxDuration": 10
-      }
-    },
-    "regions": ["bom1"],
-    "github": {
-      "silent": true
+  "version": 2,
+  "builds": [
+    {
+      "src": "app.js",
+      "use": "@vercel/node"
     }
-  }
-  
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/app.js"
+    }
+  ]
+}
