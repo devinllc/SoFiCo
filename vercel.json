@@ -1,17 +1,17 @@
 {
   "version": 2,
-  "buildCommand": "cd server && npm install --legacy-peer-deps --no-audit --no-fund && npm run build || (echo 'Build failed' && exit 1)",
-  "outputDirectory": "server/dist",
+  "buildCommand": "npm install --legacy-peer-deps --no-audit --no-fund && npm run build || (echo 'Build failed' && exit 1)",
+  "outputDirectory": "dist",
   "builds": [
     {
-      "src": "server/dist/app.js",
+      "src": "dist/app.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/server/dist/app.js"
+      "dest": "/dist/app.js"
     }
   ],
   "env": {
