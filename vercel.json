@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "cd server && npm install --legacy-peer-deps && npm run build",
+  "buildCommand": "cd server && npm install --legacy-peer-deps --no-audit --no-fund && npm run build || (echo 'Build failed' && exit 1)",
   "outputDirectory": "server/dist",
   "builds": [
     {
@@ -13,5 +13,8 @@
       "src": "/(.*)",
       "dest": "/server/dist/app.js"
     }
-  ]
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
 } 
