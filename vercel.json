@@ -1,17 +1,17 @@
 {
   "version": 2,
-  "buildCommand": "rm -rf node_modules package-lock.json && npm install --legacy-peer-deps",
-  "outputDirectory": "server",
+  "buildCommand": "cd server && npm install --legacy-peer-deps && npm run build",
+  "outputDirectory": "server/dist",
   "builds": [
     {
-      "src": "server/src/app.js",
+      "src": "server/dist/app.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/server/src/app.js"
+      "dest": "/server/dist/app.js"
     }
   ]
 } 
