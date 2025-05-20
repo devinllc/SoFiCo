@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "npm install --legacy-peer-deps",
+  "buildCommand": "rm -rf node_modules package-lock.json && npm install --legacy-peer-deps",
   "outputDirectory": "server",
   "builds": [
     {
