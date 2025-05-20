@@ -3,6 +3,8 @@ import logo from '../assets/image.png';
 import { NavLink, Routes, Route } from 'react-router-dom';
 import Home from './Home';
 import LoginPage from './LoginPage';
+import Dashboard from './Dashboard'
+import AuthPage from './AuthPage';
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -119,6 +121,7 @@ export default function Navbar() {
             >
               Services
             </NavLink>
+            
           </div>
           {/* Sign In Button */}
           <NavLink
@@ -194,7 +197,8 @@ export default function Navbar() {
         <Route path="/about" element={<div className="pt-20">About Page</div>} />
         <Route path="/featured" element={<div className="pt-20">Featured Page</div>} />
         <Route path="/services" element={<div className="pt-20">Services Page</div>} />
-        <Route path="/login" element={<LoginPage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/login" element={<AuthPage />} />
       </Routes>
     </>
   );
