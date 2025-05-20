@@ -50,7 +50,15 @@ wallet:{
             processedAt:Date,
         }
     ]
-}
+},
+loan:[
+   { loanId:mongoose.Schema.Types.ObjectId,
+    status:{type:String,enum:['pending','approved','rejected','completed'],default:'pending',
+    },
+    appliedAt:Date
+
+   }
+]
 
 
 });
