@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import logo from '../assets/image.png';
 import { NavLink, Routes, Route } from 'react-router-dom';
 import Home from './Home';
+import AuthPage from './AuthPage'
+
 import Dashboard from './Dashboard'
 
 export default function Navbar() {
@@ -78,7 +80,7 @@ export default function Navbar() {
         >
           {/* Logo */}
           <div className="flex items-center pr-4 border-r border-white/20">
-            <img src={logo} alt="Logo" className="w-8 h-8 object-contain" />
+            <img src={logo} alt="Logo" className="w-20 h-10 object-fit object-contain" />
           </div>
           {/* Nav Links */}
           <div className="flex space-x-6">
@@ -123,7 +125,7 @@ export default function Navbar() {
           </div>
           {/* Sign In Button */}
           <NavLink
-            to="/"
+            to="/login"
             className={({ isActive }) =>
               `ml-4 px-5 py-2 rounded-full border border-white/40 font-semibold text-white transition-all duration-200
               bg-gradient-to-r from-green-400/90 to-green-500/80 shadow-md hover:from-green-300 hover:to-green-400 hover:text-[#0a3d4d]
@@ -136,7 +138,7 @@ export default function Navbar() {
 
         {/* Mobile Hamburger */}
         <div className="sm:hidden flex w-full items-center justify-between px-4">
-          <img src={logo} alt="Logo" className="w-8 h-8 object-contain" />
+          <img src={logo} alt="Logo" className="w-22 h-12 object-fit object-contain" />
           <button
             className="z-40 flex flex-col justify-center items-center w-10 h-10 rounded-full bg-white/10 border border-white/20 shadow-lg backdrop-blur-lg"
             onClick={() => setMenuOpen(true)}
@@ -194,9 +196,9 @@ export default function Navbar() {
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<div className="pt-20">About Page</div>} />
         <Route path="/featured" element={<div className="pt-20">Featured Page</div>} />
-        <Route path="/services" element={<div className="pt-20">Services Page</div>} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/login" element={<div className="pt-20 />} />
+        {/* <Route path="/services" element={<div className="pt-20">Services Page</div>} /> */}
+        {/* <Route path="/dashboard" element={<Dashboard />} /> */}
+        <Route path="/login" element={<AuthPage/>} />
       </Routes>
     </>
   );

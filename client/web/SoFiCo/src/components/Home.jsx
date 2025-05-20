@@ -3,7 +3,6 @@ import Hero from './Hero';
 import About from './About'
 import FeaturedSection from './FeaturedSection'
 import TrustworthinessSection from './TrustworthinessSection'
-import DualCardFeatureSection  from './DualCardFeatureSection'
 import ThreeCardServicesSection from './ThreeCardServicesSection'
 import GetStartedSection from './GetStartedSection'
 import FooterSection from './FooterSection'
@@ -15,7 +14,6 @@ function Home() {
       <About />
       <FeaturedSection />
       <TrustworthinessSection />
-      <DualCardFeatureSection />
       <ThreeCardServicesSection />
       <GetStartedSection />
       <FooterSection />

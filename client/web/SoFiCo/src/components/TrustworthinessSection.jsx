@@ -25,7 +25,7 @@ const TrustworthinessSection = () => {
           {/* Badge */}
           <span className="flex items-center bg-[#163d5e] text-green-300 px-3 py-1 rounded-full text-xs font-semibold mb-4">
             <span className="text-yellow-400 text-lg mr-1">▲</span>
-            TRUSTWORTHINESS
+            TRUST & SECURITY
           </span>
           {/* Heading */}
           <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-4 leading-tight">
