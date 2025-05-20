@@ -1,7 +1,5 @@
 {
   "version": 2,
-  "buildCommand": "npm install --legacy-peer-deps --no-audit --no-fund && npm run build || (echo 'Build failed' && exit 1)",
-  "outputDirectory": "dist",
   "builds": [
     {
       "src": "src/app.js",
@@ -10,11 +8,16 @@
   ],
   "routes": [
     {
+      "src": "/health",
+      "dest": "/src/app.js"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/src/app.js"
+    },
+    {
       "src": "/(.*)",
       "dest": "/src/app.js"
     }
-  ],
-  "env": {
-    "NODE_ENV": "production"
-  }
+  ]
 } 

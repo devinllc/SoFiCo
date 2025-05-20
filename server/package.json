@@ -6,7 +6,6 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "build": "echo 'Starting build...' && rm -rf dist && mkdir -p dist/src && echo 'Copying source files...' && cp -r src/* dist/src/ && echo 'Copying package.json...' && cp package.json dist/ && echo 'Build completed successfully'",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
