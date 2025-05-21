@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../constants/colors.dart';
 import '../../constants/text_styles.dart';
+import '../../services/auth_service.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_text_field.dart';
+import '../home/home_screen.dart';
 import 'signup_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -16,13 +18,48 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _authService = AuthService();
   bool _obscurePassword = true;
+  bool _isLoading = false;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _login() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() => _isLoading = true);
+
+      try {
+        await _authService.login(
+          _emailController.text.trim(),
+          _passwordController.text,
+        );
+
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(e.toString()),
+              backgroundColor: AppColors.accent,
+            ),
+          );
+        }
+      } finally {
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
+      }
+    }
   }
 
   @override
@@ -45,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.1),
+                          color: AppColors.primary.withAlpha(25),
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: const Icon(
@@ -154,14 +191,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Login button
                 CustomButton(
                   text: 'Login',
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      // TODO: Implement login functionality
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Login successful')),
-                      );
-                    }
-                  },
+                  onPressed: () => _login(),
+                  isLoading: _isLoading,
                 ),
                 
                 const SizedBox(height: 24),
