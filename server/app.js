@@ -2,16 +2,9 @@ const express = require("express");
 const app = express();
 const cookieParser = require("cookie-parser");
 const path = require("path");
-// const authRoutes= require('./routes/authRoutes');
-// const walletRoutes= require('./routes/walletRoutes');
+
 const cors = require('cors');
 
-// Import routes
-const authRoutes = require('./services/auth/routes/authRoutes');
-const walletRoutes = require('./services/wallet/routes/walletRoutes');
-const agentRoutes = require('./services/agent/routes/agentRoutes');
-const loanRoutes = require('./services/loan/routes/loanRoutes');
-const schemeRoutes = require('./services/scheme/routes/schemeRoutes');
 
 require("dotenv").config();
 app.use(express.json());
@@ -61,4 +54,5 @@ if (process.env.NODE_ENV !== 'production') {
       console.log(`🚀 Server running on http://localhost:${PORT}`);
     });
   }
+  
 module.exports = app;
