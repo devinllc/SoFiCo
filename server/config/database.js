@@ -3,11 +3,16 @@ const mongoose = require('mongoose');
 // Validate MongoDB URI
 const validateMongoURI = (uri) => {
     if (!uri) {
+        console.error('MongoDB URI is not defined in environment variables');
         throw new Error('MongoDB URI is not defined');
     }
     if (!uri.startsWith('mongodb://') && !uri.startsWith('mongodb+srv://')) {
+        console.error('Invalid MongoDB URI format:', uri.substring(0, 20) + '...');
         throw new Error('Invalid MongoDB URI: must start with mongodb:// or mongodb+srv://');
     }
+    // Log successful validation (without sensitive info)
+    const sanitizedUri = uri.replace(/(mongodb(\+srv)?:\/\/[^:]+:)([^@]+)@/, '$1****@');
+    console.log('MongoDB URI validated successfully:', sanitizedUri);
     return uri;
 };
 
@@ -25,12 +30,16 @@ const getReadyPromise = () => {
     if (!readyPromise) {
         readyPromise = new Promise((resolve, reject) => {
             if (mongoose.connection.readyState === 1) {
+                console.log('MongoDB connection already established');
                 resolve();
             } else {
+                console.log('Waiting for MongoDB connection...');
                 mongoose.connection.once('connected', () => {
+                    console.log('MongoDB connection established in getReadyPromise');
                     resolve();
                 });
                 mongoose.connection.once('error', (err) => {
+                    console.error('MongoDB connection error in getReadyPromise:', err);
                     reject(err);
                 });
             }
@@ -43,18 +52,24 @@ const getReadyPromise = () => {
 let cachedConnection = null;
 
 const connectDB = async () => {
+    console.log('Attempting to connect to MongoDB...');
+    console.log('Environment:', process.env.NODE_ENV);
+    
     // If we have a cached connection in a serverless environment, return it
     if (cachedConnection) {
+        console.log('Using cached MongoDB connection');
         return cachedConnection;
     }
 
     // If already connecting, return the existing promise
     if (isConnecting) {
+        console.log('MongoDB connection already in progress');
         return connectionPromise;
     }
 
     // If already connected, return
     if (mongoose.connection.readyState === 1) {
+        console.log('MongoDB already connected');
         return Promise.resolve();
     }
 
@@ -64,17 +79,21 @@ const connectDB = async () => {
 
     const connectWithRetry = async () => {
         try {
+            console.log('Starting MongoDB connection attempt...');
+            
             // Validate MongoDB URI
             const mongoURI = validateMongoURI(process.env.MONGODB_URI);
 
             // Clear any existing connections
             if (mongoose.connection.readyState !== 0) {
+                console.log('Clearing existing MongoDB connection...');
                 await mongoose.connection.close();
             }
 
             // Reset ready promise
             readyPromise = null;
 
+            console.log('Connecting to MongoDB...');
             const conn = await mongoose.connect(mongoURI, {
                 serverSelectionTimeoutMS: 10000, // Reduced timeout for serverless
                 socketTimeoutMS: 20000, // Reduced timeout for serverless
@@ -99,7 +118,7 @@ const connectDB = async () => {
                 authSource: 'admin'
             });
 
-            console.log(`MongoDB Connected: ${conn.connection.host}`);
+            console.log(`MongoDB Connected successfully to: ${conn.connection.host}`);
             isConnecting = false;
             retryCount = 0;
 
@@ -109,6 +128,12 @@ const connectDB = async () => {
             // Handle connection errors after initial connection
             mongoose.connection.on('error', async (err) => {
                 console.error('MongoDB connection error:', err);
+                console.error('Error details:', {
+                    name: err.name,
+                    message: err.message,
+                    code: err.code,
+                    state: mongoose.connection.readyState
+                });
                 cachedConnection = null; // Clear cache on error
                 if (err.name === 'MongoServerSelectionError' || err.name === 'MongoNetworkError') {
                     console.log('Attempting to reconnect...');
@@ -124,7 +149,7 @@ const connectDB = async () => {
             });
 
             mongoose.connection.on('disconnected', async () => {
-                console.log('MongoDB disconnected. Attempting to reconnect...');
+                console.log('MongoDB disconnected. Current state:', mongoose.connection.readyState);
                 cachedConnection = null; // Clear cache on disconnect
                 try {
                     await mongoose.connection.close();
@@ -151,6 +176,7 @@ const connectDB = async () => {
             // Add connection success handler
             mongoose.connection.on('connected', () => {
                 console.log('MongoDB connection established successfully');
+                console.log('Connection state:', mongoose.connection.readyState);
                 isConnecting = false;
                 retryCount = 0;
             });
@@ -160,6 +186,12 @@ const connectDB = async () => {
         } catch (error) {
             retryCount++;
             console.error(`MongoDB connection attempt ${retryCount} failed:`, error.message);
+            console.error('Error details:', {
+                name: error.name,
+                message: error.message,
+                code: error.code,
+                state: mongoose.connection.readyState
+            });
             cachedConnection = null; // Clear cache on error
             
             if (retryCount < maxRetries) {
@@ -174,6 +206,7 @@ const connectDB = async () => {
                 });
             } else {
                 console.error('Max retries reached. Could not connect to MongoDB.');
+                console.error('Final connection state:', mongoose.connection.readyState);
                 isConnecting = false;
                 readyPromise = null;
                 throw error;
