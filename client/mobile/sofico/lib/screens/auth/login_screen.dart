@@ -37,34 +37,83 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _login() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
 
-      try {
-        await _authService.login(
-          email: _emailController.text.trim(),
-          password: _passwordController.text,
-        );
+    if (_isLoading) {
+      print('Login already in progress, ignoring request');
+      return;
+    }
 
-        if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
-          );
-        }
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(e.toString()),
-              backgroundColor: AppColors.error,
-            ),
-          );
-        }
-      } finally {
-        if (mounted) {
-          setState(() => _isLoading = false);
-        }
+    setState(() => _isLoading = true);
+    print('Starting login process...');
+
+    try {
+      final email = _emailController.text.trim();
+      final password = _passwordController.text;
+      print('Attempting login with email: $email');
+
+      final response = await _authService.login(
+        email: email,
+        password: password,
+      );
+      print('Login response received: ${response.toString()}');
+
+      if (!mounted) {
+        print('Widget no longer mounted after login, returning');
+        return;
+      }
+
+      // Check if we have user data
+      final user = _authService.currentUser;
+      if (user == null) {
+        print('No user data received after login');
+        throw Exception('Login successful but no user data received');
+      }
+
+      print('Login successful for user: ${user['email']}');
+      
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Login successful!'),
+          backgroundColor: AppColors.success,
+        ),
+      );
+
+      // Navigate to home screen
+      print('Navigating to home screen...');
+      await Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+      print('Navigation complete');
+
+    } catch (e, stackTrace) {
+      print('Login error occurred:');
+      print('Error: $e');
+      print('Stack trace: $stackTrace');
+      
+      if (!mounted) {
+        print('Widget no longer mounted after error, returning');
+        return;
+      }
+
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString().replaceAll('Exception: ', '')),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    } finally {
+      print('Login process completed, cleaning up...');
+      if (mounted) {
+        print('Setting loading state to false');
+        setState(() => _isLoading = false);
+      } else {
+        print('Widget no longer mounted during cleanup');
       }
     }
   }

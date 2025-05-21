@@ -10,16 +10,14 @@ class LoanService {
   Future<Map<String, dynamic>> applyForLoan({
     required double amount,
     required String purpose,
-    required int tenure,
-    required Map<String, dynamic> documents,
-    String? schemeId,
+    required int duration,
+    String? collateral,
   }) async {
     final response = await _api.post('/loan/apply', data: {
       'amount': amount,
       'purpose': purpose,
-      'tenure': tenure,
-      'documents': documents,
-      if (schemeId != null) 'schemeId': schemeId,
+      'duration': duration,
+      if (collateral != null) 'collateral': collateral,
     });
     return response.data;
   }
@@ -37,34 +35,21 @@ class LoanService {
   }
 
   // Get all loans (admin/agent only)
-  Future<List<Map<String, dynamic>>> getAllLoans({
-    String? status,
-    String? agentId,
-    DateTime? startDate,
-    DateTime? endDate,
-  }) async {
-    final queryParams = {
-      if (status != null) 'status': status,
-      if (agentId != null) 'agentId': agentId,
-      if (startDate != null) 'startDate': startDate.toIso8601String(),
-      if (endDate != null) 'endDate': endDate.toIso8601String(),
-    };
-    
-    final response = await _api.get('/loan', queryParameters: queryParams);
-    return List<Map<String, dynamic>>.from(response.data);
+  Future<List<Map<String, dynamic>>> getAllLoans() async {
+    final response = await _api.get('/loan');
+    return List<Map<String, dynamic>>.from(response.data['loans']);
   }
 
   // Approve loan (admin/agent only)
-  Future<Map<String, dynamic>> approveLoan({
+  Future<void> approveLoan({
     required String loanId,
-    String? comments,
-    Map<String, dynamic>? terms,
+    required bool approved,
+    String? notes,
   }) async {
-    final response = await _api.post('/loan/$loanId/approve', data: {
-      if (comments != null) 'comments': comments,
-      if (terms != null) 'terms': terms,
+    await _api.post('/loan/$loanId/approve', data: {
+      'approved': approved,
+      if (notes != null) 'notes': notes,
     });
-    return response.data;
   }
 
   // Reject loan (admin/agent only)
@@ -79,15 +64,14 @@ class LoanService {
   }
 
   // Update loan status (admin/agent only)
-  Future<Map<String, dynamic>> updateLoanStatus({
+  Future<void> updateLoanStatus({
     required String loanId,
     required String status,
-    String? comments,
+    String? notes,
   }) async {
-    final response = await _api.put('/loan/$loanId/status', data: {
+    await _api.put('/loan/$loanId/status', data: {
       'status': status,
-      if (comments != null) 'comments': comments,
+      if (notes != null) 'notes': notes,
     });
-    return response.data;
   }
 } 

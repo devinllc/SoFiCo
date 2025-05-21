@@ -12,16 +12,16 @@ class SchemeService {
     required String description,
     required double targetAmount,
     required int duration,
-    required List<String> members,
-    Map<String, dynamic>? rules,
+    required double contributionAmount,
+    required String contributionFrequency,
   }) async {
     final response = await _api.post('/scheme', data: {
       'name': name,
       'description': description,
       'targetAmount': targetAmount,
       'duration': duration,
-      'members': members,
-      if (rules != null) 'rules': rules,
+      'contributionAmount': contributionAmount,
+      'contributionFrequency': contributionFrequency,
     });
     return response.data;
   }
@@ -29,7 +29,7 @@ class SchemeService {
   // Get user's schemes
   Future<List<Map<String, dynamic>>> getMySchemes() async {
     final response = await _api.get('/scheme/my-schemes');
-    return List<Map<String, dynamic>>.from(response.data);
+    return List<Map<String, dynamic>>.from(response.data['schemes']);
   }
 
   // Get scheme details
@@ -50,14 +50,8 @@ class SchemeService {
   }
 
   // Dissolve scheme
-  Future<Map<String, dynamic>> dissolveScheme({
-    required String schemeId,
-    required String reason,
-  }) async {
-    final response = await _api.post('/scheme/$schemeId/dissolve', data: {
-      'reason': reason,
-    });
-    return response.data;
+  Future<void> dissolveScheme(String schemeId) async {
+    await _api.post('/scheme/$schemeId/dissolve');
   }
 
   // Add member to scheme
@@ -87,31 +81,20 @@ class SchemeService {
   }
 
   // Get all schemes (admin only)
-  Future<List<Map<String, dynamic>>> getAllSchemes({
-    String? status,
-    DateTime? startDate,
-    DateTime? endDate,
-  }) async {
-    final queryParams = {
-      if (status != null) 'status': status,
-      if (startDate != null) 'startDate': startDate.toIso8601String(),
-      if (endDate != null) 'endDate': endDate.toIso8601String(),
-    };
-    
-    final response = await _api.get('/scheme', queryParameters: queryParams);
-    return List<Map<String, dynamic>>.from(response.data);
+  Future<List<Map<String, dynamic>>> getAllSchemes() async {
+    final response = await _api.get('/scheme');
+    return List<Map<String, dynamic>>.from(response.data['schemes']);
   }
 
   // Approve scheme (admin only)
-  Future<Map<String, dynamic>> approveScheme({
+  Future<void> approveScheme({
     required String schemeId,
-    String? comments,
-    Map<String, dynamic>? terms,
+    required bool approved,
+    String? notes,
   }) async {
-    final response = await _api.post('/scheme/$schemeId/approve', data: {
-      if (comments != null) 'comments': comments,
-      if (terms != null) 'terms': terms,
+    await _api.post('/scheme/$schemeId/approve', data: {
+      'approved': approved,
+      if (notes != null) 'notes': notes,
     });
-    return response.data;
   }
 } 

@@ -22,8 +22,6 @@ const generateToken = (user) => {
 // Verify JWT token
 const verifyToken = async (req, res, next) => {
   try {
-    // Ensure database is ready
-    await getReadyPromise();
 
     const token = req.header('Authorization')?.replace('Bearer ', '');
     
@@ -62,7 +60,7 @@ const authorize = (...roles) => {
 const refreshToken = async (req, res) => {
   try {
     // Ensure database is ready
-    await getReadyPromise();
+     
 
     const { refreshToken } = req.body;
     

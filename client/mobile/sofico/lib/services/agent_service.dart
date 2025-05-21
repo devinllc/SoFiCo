@@ -8,30 +8,19 @@ class AgentService {
 
   // Register new agent (admin only)
   Future<Map<String, dynamic>> registerAgent({
-    required String name,
+    required String firstName,
+    required String lastName,
     required String email,
-    required String password,
     required String phone,
-    required String address,
-    String? commissionRate,
+    required String password,
   }) async {
     final response = await _api.post('/agent/register', data: {
-      'name': name,
+      'firstName': firstName,
+      'lastName': lastName,
       'email': email,
-      'password': password,
       'phone': phone,
-      'address': address,
-      if (commissionRate != null) 'commissionRate': commissionRate,
+      'password': password,
     });
-    return response.data;
-  }
-
-  // Update agent performance (admin only)
-  Future<Map<String, dynamic>> updateAgentPerformance({
-    required String agentId,
-    required Map<String, dynamic> performance,
-  }) async {
-    final response = await _api.post('/agent/$agentId/performance', data: performance);
     return response.data;
   }
 
@@ -44,41 +33,42 @@ class AgentService {
   // Get assigned loans (agent only)
   Future<List<Map<String, dynamic>>> getAssignedLoans() async {
     final response = await _api.get('/agent/loans');
-    return List<Map<String, dynamic>>.from(response.data);
-  }
-
-  // Assign loan to agent (agent only)
-  Future<Map<String, dynamic>> assignLoan({
-    required String loanId,
-    required String agentId,
-  }) async {
-    final response = await _api.post('/agent/loans/$loanId/assign', data: {
-      'agentId': agentId,
-    });
-    return response.data;
+    return List<Map<String, dynamic>>.from(response.data['loans']);
   }
 
   // Get created users (agent only)
   Future<List<Map<String, dynamic>>> getCreatedUsers() async {
     final response = await _api.get('/agent/users');
-    return List<Map<String, dynamic>>.from(response.data);
+    return List<Map<String, dynamic>>.from(response.data['users']);
   }
 
   // Create new user (agent only)
   Future<Map<String, dynamic>> createUser({
-    required String name,
+    required String firstName,
+    required String lastName,
     required String email,
-    required String password,
     required String phone,
-    String? role,
+    required String password,
   }) async {
     final response = await _api.post('/agent/users', data: {
-      'name': name,
+      'firstName': firstName,
+      'lastName': lastName,
       'email': email,
-      'password': password,
       'phone': phone,
-      if (role != null) 'role': role,
+      'password': password,
     });
     return response.data;
+  }
+
+  // Update performance score (admin only)
+  Future<void> updatePerformanceScore({
+    required String agentId,
+    required double score,
+    String? notes,
+  }) async {
+    await _api.post('/agent/$agentId/performance', data: {
+      'score': score,
+      if (notes != null) 'notes': notes,
+    });
   }
 } 
