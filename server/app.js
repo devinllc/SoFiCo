@@ -2,7 +2,7 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const path = require("path");
 const cors = require('cors');
-const connectDB = require('./config/database');
+const { connectDB, mongoose } = require('./config/database');
 const authRoutes = require('./services/auth/routes/authRoutes');
 // const walletRoutes = require('./services/wallet/routes/walletRoutes');
 const agentRoutes = require('./services/agent/routes/agentRoutes');
@@ -64,13 +64,18 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
     try {
-        // Connect to MongoDB
+        // Connect to MongoDB first
         await connectDB();
         
-        // Start server
-        app.listen(PORT, () => {
-            console.log(`Server is running on port ${PORT}`);
-        });
+        // Only start the server if we have a valid connection
+        if (mongoose.connection.readyState === 1) {
+            app.listen(PORT, () => {
+                console.log(`Server is running on port ${PORT}`);
+            });
+        } else {
+            console.error('MongoDB connection not ready. Server not started.');
+            process.exit(1);
+        }
     } catch (error) {
         console.error('Failed to start server:', error);
         process.exit(1);
