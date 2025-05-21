@@ -123,8 +123,8 @@ class _LoansTabState extends State<LoansTab> {
                       ),
                       child: Text(
                         loan.status,
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: AppColors.background,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),

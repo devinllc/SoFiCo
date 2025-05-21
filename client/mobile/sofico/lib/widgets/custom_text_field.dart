@@ -162,8 +162,8 @@ class _CustomTextFieldState extends State<CustomTextField> with SingleTickerProv
                       ),
                       filled: true,
                       fillColor: widget.enabled
-                          ? (_isFocused ? Colors.white : Colors.grey[50])
-                          : Colors.grey[100],
+                          ? (_isFocused ? AppColors.background : AppColors.background)
+                          : AppColors.border,
                       suffixIcon: widget.suffixIcon,
                       contentPadding: widget.contentPadding ??
                           EdgeInsets.only(

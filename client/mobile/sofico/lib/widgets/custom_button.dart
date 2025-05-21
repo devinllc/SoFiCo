@@ -87,7 +87,7 @@ class _CustomButtonState extends State<CustomButton> with SingleTickerProviderSt
             height: widget.height ?? 48,
             decoration: BoxDecoration(
               color: widget.isOutlined
-                  ? Colors.transparent
+                  ? AppColors.transparent
                   : (widget.backgroundColor ?? theme.colorScheme.primary),
               borderRadius: BorderRadius.circular(12),
               border: widget.isOutlined
@@ -108,7 +108,7 @@ class _CustomButtonState extends State<CustomButton> with SingleTickerProviderSt
                   : null,
             ),
             child: Material(
-              color: Colors.transparent,
+              color: AppColors.transparent,
               child: InkWell(
                 onTap: widget.isLoading ? null : widget.onPressed,
                 borderRadius: BorderRadius.circular(12),
@@ -122,7 +122,7 @@ class _CustomButtonState extends State<CustomButton> with SingleTickerProviderSt
                             valueColor: AlwaysStoppedAnimation<Color>(
                               widget.isOutlined
                                   ? (widget.color ?? theme.colorScheme.primary)
-                                  : Colors.white,
+                                  : AppColors.background,
                             ),
                           ),
                         )
@@ -136,7 +136,7 @@ class _CustomButtonState extends State<CustomButton> with SingleTickerProviderSt
                                 size: 20,
                                 color: widget.isOutlined
                                     ? (widget.color ?? theme.colorScheme.primary)
-                                    : Colors.white,
+                                    : AppColors.background,
                               ),
                               const SizedBox(width: 8),
                             ],
@@ -145,7 +145,7 @@ class _CustomButtonState extends State<CustomButton> with SingleTickerProviderSt
                               style: AppTextStyles.button.copyWith(
                                 color: widget.isOutlined
                                     ? (widget.color ?? theme.colorScheme.primary)
-                                    : Colors.white,
+                                    : AppColors.background,
                               ),
                             ),
                           ],

@@ -337,7 +337,7 @@ class DashboardTab extends StatelessWidget {
                           Text(
                             activity.description,
                             style: AppTextStyles.caption.copyWith(
-                              color: Colors.grey[600],
+                              color: AppColors.textLight,
                             ),
                           ),
                           if (activity.isPending) ...[

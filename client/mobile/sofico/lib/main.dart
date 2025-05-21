@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'services/service_provider.dart';
 import 'screens/splash_screen.dart';
 import 'constants/colors.dart';
 import 'constants/text_styles.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider<ServiceProvider>(
+      create: (_) => ServiceProvider(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -33,11 +40,11 @@ class MyApp extends StatelessWidget {
           iconTheme: const IconThemeData(color: AppColors.primary),
           titleTextStyle: AppTextStyles.heading3.copyWith(color: AppColors.primary),
         ),
-        cardTheme: const CardThemeData(
+        cardTheme: CardThemeData(
           elevation: 0,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(16)),
-            side: BorderSide(color: AppColors.border),
+            borderRadius: BorderRadius.circular(16),
+            side: const BorderSide(color: AppColors.border),
           ),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
@@ -82,6 +89,47 @@ class MyApp extends StatelessWidget {
         ),
       ),
       home: const SplashScreen(),
+    );
+  }
+}
+
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('SoFiCo'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Welcome to SoFiCo',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  // Example of using the auth service
+                  final authService = ServiceProvider.of(context).authService;
+                  final response = await authService.login(
+                    email: 'test@example.com',
+                    password: 'password123',
+                  );
+                  print('Login response: $response');
+                } catch (e) {
+                  print('Error: $e');
+                }
+              },
+              child: const Text('Test Login'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

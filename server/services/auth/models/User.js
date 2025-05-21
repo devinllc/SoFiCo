@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 
 const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    unique: true,
     trim: true,
     lowercase: true
   },
@@ -32,7 +32,15 @@ const userSchema = new mongoose.Schema({
   phone: {
     type: String,
     required: true,
-    unique: true
+    trim: true
+  },
+  username: {
+    type: String,
+    trim: true
+  },
+  apiKey: {
+    type: String,
+    sparse: true // This allows multiple null values
   },
   isActive: {
     type: Boolean,
@@ -58,17 +66,28 @@ const userSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Hash password before saving
+// Generate username from email before saving
 userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
-  
-  try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-  } catch (error) {
-    next(error);
+  if (this.isModified('password')) {
+    try {
+      const salt = await bcrypt.genSalt(10);
+      this.password = await bcrypt.hash(this.password, salt);
+    } catch (error) {
+      return next(error);
+    }
   }
+
+  // Generate username from email if not provided
+  if (!this.username && this.email) {
+    this.username = this.email.split('@')[0];
+  }
+
+  // Generate API key if not provided
+  if (!this.apiKey) {
+    this.apiKey = crypto.randomBytes(32).toString('hex');
+  }
+
+  next();
 });
 
 // Method to compare password
@@ -83,6 +102,12 @@ userSchema.methods.getPublicProfile = function() {
   delete userObject.__v;
   return userObject;
 };
+
+// Define indexes in one place
+userSchema.index({ email: 1 }, { unique: true });
+userSchema.index({ phone: 1 }, { unique: true });
+userSchema.index({ username: 1 }, { unique: true, sparse: true });
+userSchema.index({ apiKey: 1 }, { unique: true, sparse: true });
 
 const User = mongoose.model('User', userSchema);
 

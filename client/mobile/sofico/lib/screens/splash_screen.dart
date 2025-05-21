@@ -35,7 +35,7 @@ class _SplashScreenState extends State<SplashScreen> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.background,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: const Icon(
@@ -51,7 +51,7 @@ class _SplashScreenState extends State<SplashScreen> {
               style: TextStyle(
                 fontSize: 36,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: AppColors.background,
               ),
             ),
             const SizedBox(height: 8),
@@ -60,7 +60,7 @@ class _SplashScreenState extends State<SplashScreen> {
               'Your Financial Companion',
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.white70,
+                color: AppColors.textLight,
               ),
             ),
           ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../constants/colors.dart';
 import '../../constants/text_styles.dart';
+import '../../services/service_provider.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_text_field.dart';
@@ -18,9 +19,15 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _authService = AuthService();
+  late final AuthService _authService;
   bool _obscurePassword = true;
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _authService = ServiceProvider.of(context).authService;
+  }
 
   @override
   void dispose() {
@@ -35,8 +42,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
       try {
         await _authService.login(
-          _emailController.text.trim(),
-          _passwordController.text,
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
         );
 
         if (mounted) {
@@ -50,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(e.toString()),
-              backgroundColor: AppColors.accent,
+              backgroundColor: AppColors.error,
             ),
           );
         }
@@ -65,6 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -92,14 +100,18 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      const Text(
+                      Text(
                         'SoFiCo',
-                        style: AppTextStyles.heading1,
+                        style: AppTextStyles.heading1.copyWith(
+                          color: AppColors.textDark,
+                        ),
                       ),
                       const SizedBox(height: 8),
-                      const Text(
+                      Text(
                         'Your Financial Companion',
-                        style: AppTextStyles.bodyLight,
+                        style: AppTextStyles.bodyLight.copyWith(
+                          color: AppColors.textLight,
+                        ),
                       ),
                     ],
                   ),
@@ -108,14 +120,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 40),
                 
                 // Welcome text
-                const Text(
+                Text(
                   'Welcome Back',
-                  style: AppTextStyles.heading2,
+                  style: AppTextStyles.heading2.copyWith(
+                    color: AppColors.textDark,
+                  ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'Sign in to continue to your account',
-                  style: AppTextStyles.bodyLight,
+                  style: AppTextStyles.bodyLight.copyWith(
+                    color: AppColors.textLight,
+                  ),
                 ),
                 
                 const SizedBox(height: 32),
@@ -176,9 +192,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: () {
                       // TODO: Implement forgot password
                     },
-                    child: const Text(
+                    child: Text(
                       'Forgot Password?',
-                      style: TextStyle(
+                      style: AppTextStyles.body.copyWith(
                         color: AppColors.primary,
                         fontWeight: FontWeight.w600,
                       ),
@@ -191,7 +207,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Login button
                 CustomButton(
                   text: 'Login',
-                  onPressed: () => _login(),
+                  onPressed: _login,
                   isLoading: _isLoading,
                 ),
                 
@@ -201,9 +217,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
+                    Text(
                       'Don\'t have an account?',
-                      style: AppTextStyles.bodyLight,
+                      style: AppTextStyles.bodyLight.copyWith(
+                        color: AppColors.textLight,
+                      ),
                     ),
                     TextButton(
                       onPressed: () {
@@ -212,9 +230,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           MaterialPageRoute(builder: (context) => const SignupScreen()),
                         );
                       },
-                      child: const Text(
+                      child: Text(
                         'Sign Up',
-                        style: TextStyle(
+                        style: AppTextStyles.body.copyWith(
                           color: AppColors.primary,
                           fontWeight: FontWeight.w600,
                         ),

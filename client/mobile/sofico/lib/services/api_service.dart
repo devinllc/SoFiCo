@@ -1,148 +1,103 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
-import 'api_config.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiService {
-  static final ApiService _instance = ApiService._internal();
-  factory ApiService() => _instance;
-  ApiService._internal(); 
+  static const String baseUrl = 'https://so-fi-co.vercel.app';
+  static const String _tokenKey = 'access_token';
+  static const String _refreshTokenKey = 'refresh_token';
+  
+  late final Dio _dio;
+  final _storage = const FlutterSecureStorage();
+  
+  ApiService() {
+    _dio = Dio(BaseOptions(
+      baseUrl: baseUrl,
+      connectTimeout: const Duration(seconds: 30),
+      receiveTimeout: const Duration(seconds: 30),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    ));
 
-  final _client = http.Client();
-  String? _accessToken;
-  String? _refreshToken;
-
-  // Initialize tokens from storage
-  Future<void> init() async {
-    final prefs = await SharedPreferences.getInstance();
-    _accessToken = prefs.getString('accessToken');
-    _refreshToken = prefs.getString('refreshToken');
+    _dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (options, handler) async {
+        final token = await _storage.read(key: _tokenKey);
+        if (token != null) {
+          options.headers['Authorization'] = 'Bearer $token';
+        }
+        return handler.next(options);
+      },
+      onError: (DioException error, handler) async {
+        if (error.response?.statusCode == 401) {
+          // Token expired, try to refresh
+          final refreshToken = await _storage.read(key: _refreshTokenKey);
+          if (refreshToken != null) {
+            try {
+              final response = await _dio.post('/auth/refresh-token', 
+                data: {'refreshToken': refreshToken});
+              
+              if (response.statusCode == 200) {
+                final newToken = response.data['accessToken'];
+                await _storage.write(key: _tokenKey, value: newToken);
+                
+                // Retry the original request
+                error.requestOptions.headers['Authorization'] = 'Bearer $newToken';
+                final retryResponse = await _dio.fetch(error.requestOptions);
+                return handler.resolve(retryResponse);
+              }
+            } catch (e) {
+              // Refresh token failed, clear tokens and redirect to login
+              await _storage.deleteAll();
+              // TODO: Implement navigation to login screen
+            }
+          }
+        }
+        return handler.next(error);
+      },
+    ));
   }
 
-  // Save tokens to storage
-  Future<void> _saveTokens(String accessToken, String refreshToken) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('accessToken', accessToken);
-    await prefs.setString('refreshToken', refreshToken);
-    _accessToken = accessToken;
-    _refreshToken = refreshToken;
-  }
-
-  // Clear tokens
-  Future<void> clearTokens() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('accessToken');
-    await prefs.remove('refreshToken');
-    _accessToken = null;
-    _refreshToken = null;
-  }
-
-  // Get headers with auth token
-  Map<String, String> _getHeaders({bool includeAuth = true}) {
-    final headers = {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    };
-
-    if (includeAuth && _accessToken != null) {
-      headers['Authorization'] = 'Bearer $_accessToken';
-    }
-
-    return headers;
-  }
-
-  // Handle response
-  dynamic _handleResponse(http.Response response) {
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      return json.decode(response.body);
-    } else if (response.statusCode == 401) {
-      // Token expired, try to refresh
-      return _refreshTokenAndRetry(response.request!);
-    } else {
-      throw Exception('API Error: ${response.statusCode} - ${response.body}');
-    }
-  }
-
-  // Refresh token and retry request
-  Future<dynamic> _refreshTokenAndRetry(http.BaseRequest request) async {
-    if (_refreshToken == null) {
-      throw Exception('No refresh token available');
-    }
-
+  // Common HTTP methods
+  Future<Response> get(String path, {Map<String, dynamic>? queryParameters}) async {
     try {
-      final response = await _client.post(
-        Uri.parse('${ApiConfig.baseUrl}${ApiConfig.refreshToken}'),
-        headers: _getHeaders(includeAuth: false),
-        body: json.encode({'refreshToken': _refreshToken}),
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        await _saveTokens(data['accessToken'], data['refreshToken']);
-        
-        // Retry original request with new token
-        final retryRequest = http.Request(request.method, request.url)
-          ..headers.addAll(_getHeaders())
-          ..body = request is http.Request ? request.body : '';
-        
-        final retryResponse = await _client.send(retryRequest);
-        final retryBody = await retryResponse.stream.bytesToString();
-        return json.decode(retryBody);
-      } else {
-        await clearTokens();
-        throw Exception('Failed to refresh token');
-      }
+      return await _dio.get(path, queryParameters: queryParameters);
     } catch (e) {
-      await clearTokens();
-      throw Exception('Token refresh failed: $e');
+      rethrow;
     }
   }
 
-  // Getters for tokens
-  String? get accessToken => _accessToken;
-  String? get refreshToken => _refreshToken;
+  Future<Response> post(String path, {dynamic data}) async {
+    try {
+      return await _dio.post(path, data: data);
+    } catch (e) {
+      rethrow;
+    }
+  }
 
-  // Save tokens to storage (public method)
+  Future<Response> put(String path, {dynamic data}) async {
+    try {
+      return await _dio.put(path, data: data);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Response> delete(String path) async {
+    try {
+      return await _dio.delete(path);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // Token management
   Future<void> saveTokens(String accessToken, String refreshToken) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('accessToken', accessToken);
-    await prefs.setString('refreshToken', refreshToken);
-    _accessToken = accessToken;
-    _refreshToken = refreshToken;
+    await _storage.write(key: _tokenKey, value: accessToken);
+    await _storage.write(key: _refreshTokenKey, value: refreshToken);
   }
 
-  // HTTP Methods
-  Future<dynamic> get(String endpoint) async {
-    final response = await _client.get(
-      Uri.parse('${ApiConfig.baseUrl}$endpoint'),
-      headers: _getHeaders(),
-    );
-    return _handleResponse(response);
-  }
-
-  Future<dynamic> post(String endpoint, {Map<String, dynamic>? body}) async {
-    final response = await _client.post(
-      Uri.parse('${ApiConfig.baseUrl}$endpoint'),
-      headers: _getHeaders(),
-      body: body != null ? json.encode(body) : null,
-    );
-    return _handleResponse(response);
-  }
-
-  Future<dynamic> put(String endpoint, {Map<String, dynamic>? body}) async {
-    final response = await _client.put(
-      Uri.parse('${ApiConfig.baseUrl}$endpoint'),
-      headers: _getHeaders(),
-      body: body != null ? json.encode(body) : null,
-    );
-    return _handleResponse(response);
-  }
-
-  Future<dynamic> delete(String endpoint) async {
-    final response = await _client.delete(
-      Uri.parse('${ApiConfig.baseUrl}$endpoint'),
-      headers: _getHeaders(),
-    );
-    return _handleResponse(response);
+  Future<void> clearTokens() async {
+    await _storage.deleteAll();
   }
 } 

@@ -282,7 +282,7 @@ class ProfileTab extends StatelessWidget {
                 Text(
                   label,
                   style: AppTextStyles.caption.copyWith(
-                    color: Colors.grey[600],
+                    color: AppColors.textLight,
                   ),
                 ),
                 const SizedBox(height: 4),
