@@ -69,10 +69,13 @@ const connectDB = async () => {
                 readPreference: 'primary',
                 compressors: 'zlib',
                 zlibCompressionLevel: 9,
-                // Add these options to prevent buffering
-                bufferMaxEntries: 0,
+                // Updated buffering options
                 autoIndex: true,
                 autoCreate: true,
+                // Add these options to prevent buffering
+                bufferCommands: false,
+                useNewUrlParser: true,
+                useUnifiedTopology: true
             });
 
             console.log(`MongoDB Connected: ${conn.connection.host}`);
