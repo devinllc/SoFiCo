@@ -1,10 +1,10 @@
 const express = require("express");
-const app = express();
 const cookieParser = require("cookie-parser");
 const path = require("path");
-
 const cors = require('cors');
+const authRoutes = require('./services/auth/routes/authRoutes')
 
+const app = express();
 
 require("dotenv").config();
 app.use(express.json());
@@ -42,7 +42,7 @@ app.get("/", (req, res) => {
 });
 
 // Routes
-// app.use('/auth', authRoutes);
+app.use('/auth', authRoutes);
 // app.use('/wallet', walletRoutes);
 // app.use('/agent', agentRoutes);
 // app.use('/loan', loanRoutes);
@@ -54,5 +54,5 @@ if (process.env.NODE_ENV !== 'production') {
       console.log(`🚀 Server running on http://localhost:${PORT}`);
     });
   }
-  
+
 module.exports = app;
