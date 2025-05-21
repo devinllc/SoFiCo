@@ -7,7 +7,7 @@ const { getReadyPromise } = require('../../../config/database');
 const register = async (req, res) => {
   try {
     // Ensure database is ready
-    await getReadyPromise();
+
 
     const { email, password, firstName, lastName, phone, role } = req.body;
 
@@ -50,7 +50,7 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   try {
     // Ensure database is ready
-    await getReadyPromise();
+     
 
     const { email, password } = req.body;
 
@@ -100,7 +100,7 @@ const getProfile = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     // Ensure database is ready
-    await getReadyPromise();
+     
 
     const updates = Object.keys(req.body);
     const allowedUpdates = ['firstName', 'lastName', 'phone', 'password'];
@@ -122,7 +122,7 @@ const updateProfile = async (req, res) => {
 const disableAccount = async (req, res) => {
   try {
     // Ensure database is ready
-    await getReadyPromise();
+     
 
     req.user.isActive = false;
     await req.user.save();
@@ -136,7 +136,7 @@ const disableAccount = async (req, res) => {
 const getAllUsers = async (req, res) => {
   try {
     // Ensure database is ready
-    await getReadyPromise();
+     
 
     const users = await User.find({}).select('-password');
     res.json(users);
@@ -149,7 +149,7 @@ const getAllUsers = async (req, res) => {
 const updateUserRole = async (req, res) => {
   try {
     // Ensure database is ready
-    await getReadyPromise();
+     
 
     const { role } = req.body;
     const user = await User.findById(req.params.id);
@@ -170,7 +170,7 @@ const updateUserRole = async (req, res) => {
 const refreshToken = async (req, res) => {
   try {
     // Ensure database is ready
-    await getReadyPromise();
+     
 
     const { refreshToken } = req.body;
     

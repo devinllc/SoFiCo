@@ -1,227 +1,46 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+const debug = require("debug")("app:mongoose");
 
-// Validate MongoDB URI
-const validateMongoURI = (uri) => {
-    if (!uri) {
-        console.error('MongoDB URI is not defined in environment variables');
-        throw new Error('MongoDB URI is not defined');
-    }
-    if (!uri.startsWith('mongodb://') && !uri.startsWith('mongodb+srv://')) {
-        console.error('Invalid MongoDB URI format:', uri.substring(0, 20) + '...');
-        throw new Error('Invalid MongoDB URI: must start with mongodb:// or mongodb+srv://');
-    }
-    // Log successful validation (without sensitive info)
-    const sanitizedUri = uri.replace(/(mongodb(\+srv)?:\/\/[^:]+:)([^@]+)@/, '$1****@');
-    console.log('MongoDB URI validated successfully:', sanitizedUri);
-    return uri;
-};
+// Load .env
+dotenv.config();
+// Load config from .env or fallback
+const mongoUri = `${process.env.MONGODB_URI || "mongodb://localhost:27017"}/${process.env.DB_NAME || "test"}`;
 
-// Disable command buffering globally
-mongoose.set('bufferCommands', false);
-mongoose.set('strictQuery', true);
+console.log("Connecting to:", mongoUri);
 
-// Track connection state
-let isConnecting = false;
-let connectionPromise = null;
-let readyPromise = null;
+// Global mongoose connection cache (for Vercel/serverless)
+let cached = global.mongoose;
 
-// Create a promise that resolves when the connection is ready
-const getReadyPromise = () => {
-    if (!readyPromise) {
-        readyPromise = new Promise((resolve, reject) => {
-            if (mongoose.connection.readyState === 1) {
-                console.log('MongoDB connection already established');
-                resolve();
-            } else {
-                console.log('Waiting for MongoDB connection...');
-                mongoose.connection.once('connected', () => {
-                    console.log('MongoDB connection established in getReadyPromise');
-                    resolve();
-                });
-                mongoose.connection.once('error', (err) => {
-                    console.error('MongoDB connection error in getReadyPromise:', err);
-                    reject(err);
-                });
-            }
-        });
-    }
-    return readyPromise;
-};
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
 
-// Cache the connection for serverless environments
-let cachedConnection = null;
+async function connectMongo() {
+  if (cached.conn) {
+    return cached.conn;
+  }
 
-const connectDB = async () => {
-    console.log('Attempting to connect to MongoDB...');
-    console.log('Environment:', process.env.NODE_ENV);
-    
-    // If we have a cached connection in a serverless environment, return it
-    if (cachedConnection) {
-        console.log('Using cached MongoDB connection');
-        return cachedConnection;
-    }
+  if (!cached.promise) {
+    cached.promise = mongoose.connect(mongoUri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    }).then((mongoose) => {
+      debug("✅ MongoDB connected successfully.");
+      return mongoose;
+    }).catch((err) => {
+      debug("❌ MongoDB connection error:", err);
+      throw err;
+    });
+  }
 
-    // If already connecting, return the existing promise
-    if (isConnecting) {
-        console.log('MongoDB connection already in progress');
-        return connectionPromise;
-    }
+  cached.conn = await cached.promise;
+  return cached.conn;
+}
 
-    // If already connected, return
-    if (mongoose.connection.readyState === 1) {
-        console.log('MongoDB already connected');
-        return Promise.resolve();
-    }
+// Immediately start connecting (keep your auto-connect behavior)
+connectMongo();
 
-    isConnecting = true;
-    const maxRetries = 3; // Reduced retries for serverless
-    let retryCount = 0;
-
-    const connectWithRetry = async () => {
-        try {
-            console.log('Starting MongoDB connection attempt...');
-            
-            // Validate MongoDB URI
-            const mongoURI = validateMongoURI(process.env.MONGODB_URI);
-
-            // Clear any existing connections
-            if (mongoose.connection.readyState !== 0) {
-                console.log('Clearing existing MongoDB connection...');
-                await mongoose.connection.close();
-            }
-
-            // Reset ready promise
-            readyPromise = null;
-
-            console.log('Connecting to MongoDB...');
-            const conn = await mongoose.connect(mongoURI, {
-                serverSelectionTimeoutMS: 10000, // Reduced timeout for serverless
-                socketTimeoutMS: 20000, // Reduced timeout for serverless
-                family: 4,
-                maxPoolSize: 10, // Reduced pool size for serverless
-                minPoolSize: 1, // Reduced min pool size for serverless
-                maxIdleTimeMS: 10000, // Reduced idle time for serverless
-                connectTimeoutMS: 10000, // Reduced timeout for serverless
-                heartbeatFrequencyMS: 2000, // More frequent heartbeat
-                retryWrites: true,
-                retryReads: true,
-                w: 'majority',
-                wtimeoutMS: 2500,
-                readPreference: 'primary',
-                compressors: 'zlib',
-                zlibCompressionLevel: 9,
-                autoIndex: true,
-                autoCreate: true,
-                bufferCommands: false,
-                useNewUrlParser: true,
-                useUnifiedTopology: true,
-                authSource: 'admin'
-            });
-
-            console.log(`MongoDB Connected successfully to: ${conn.connection.host}`);
-            isConnecting = false;
-            retryCount = 0;
-
-            // Cache the connection for serverless environments
-            cachedConnection = conn;
-
-            // Handle connection errors after initial connection
-            mongoose.connection.on('error', async (err) => {
-                console.error('MongoDB connection error:', err);
-                console.error('Error details:', {
-                    name: err.name,
-                    message: err.message,
-                    code: err.code,
-                    state: mongoose.connection.readyState
-                });
-                cachedConnection = null; // Clear cache on error
-                if (err.name === 'MongoServerSelectionError' || err.name === 'MongoNetworkError') {
-                    console.log('Attempting to reconnect...');
-                    try {
-                        await mongoose.connection.close();
-                        isConnecting = false;
-                        readyPromise = null;
-                        setTimeout(() => connectDB(), 2000); // Reduced delay for serverless
-                    } catch (closeError) {
-                        console.error('Error closing connection:', closeError);
-                    }
-                }
-            });
-
-            mongoose.connection.on('disconnected', async () => {
-                console.log('MongoDB disconnected. Current state:', mongoose.connection.readyState);
-                cachedConnection = null; // Clear cache on disconnect
-                try {
-                    await mongoose.connection.close();
-                    isConnecting = false;
-                    readyPromise = null;
-                    setTimeout(() => connectDB(), 2000); // Reduced delay for serverless
-                } catch (closeError) {
-                    console.error('Error closing connection:', closeError);
-                }
-            });
-
-            // Handle process termination
-            process.on('SIGINT', async () => {
-                try {
-                    await mongoose.connection.close();
-                    console.log('MongoDB connection closed through app termination');
-                    process.exit(0);
-                } catch (err) {
-                    console.error('Error during MongoDB disconnection:', err);
-                    process.exit(1);
-                }
-            });
-
-            // Add connection success handler
-            mongoose.connection.on('connected', () => {
-                console.log('MongoDB connection established successfully');
-                console.log('Connection state:', mongoose.connection.readyState);
-                isConnecting = false;
-                retryCount = 0;
-            });
-
-            return conn;
-
-        } catch (error) {
-            retryCount++;
-            console.error(`MongoDB connection attempt ${retryCount} failed:`, error.message);
-            console.error('Error details:', {
-                name: error.name,
-                message: error.message,
-                code: error.code,
-                state: mongoose.connection.readyState
-            });
-            cachedConnection = null; // Clear cache on error
-            
-            if (retryCount < maxRetries) {
-                const delay = Math.min(1000 * Math.pow(2, retryCount), 5000); // Reduced max delay for serverless
-                console.log(`Retrying connection in ${delay/1000} seconds... (Attempt ${retryCount + 1}/${maxRetries})`);
-                isConnecting = false;
-                readyPromise = null;
-                return new Promise(resolve => {
-                    setTimeout(() => {
-                        connectWithRetry().then(resolve);
-                    }, delay);
-                });
-            } else {
-                console.error('Max retries reached. Could not connect to MongoDB.');
-                console.error('Final connection state:', mongoose.connection.readyState);
-                isConnecting = false;
-                readyPromise = null;
-                throw error;
-            }
-        }
-    };
-
-    // Store the connection promise
-    connectionPromise = connectWithRetry();
-    return connectionPromise;
-};
-
-// Export both the connection function and the mongoose instance
-module.exports = {
-    connectDB,
-    mongoose,
-    getReadyPromise
-}; 
+module.exports = mongoose.connection;
