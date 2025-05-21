@@ -7,6 +7,26 @@ mongoose.set('strictQuery', true);
 // Track connection state
 let isConnecting = false;
 let connectionPromise = null;
+let readyPromise = null;
+
+// Create a promise that resolves when the connection is ready
+const getReadyPromise = () => {
+    if (!readyPromise) {
+        readyPromise = new Promise((resolve, reject) => {
+            if (mongoose.connection.readyState === 1) {
+                resolve();
+            } else {
+                mongoose.connection.once('connected', () => {
+                    resolve();
+                });
+                mongoose.connection.once('error', (err) => {
+                    reject(err);
+                });
+            }
+        });
+    }
+    return readyPromise;
+};
 
 const connectDB = async () => {
     // If already connecting, return the existing promise
@@ -29,6 +49,9 @@ const connectDB = async () => {
             if (mongoose.connection.readyState !== 0) {
                 await mongoose.connection.close();
             }
+
+            // Reset ready promise
+            readyPromise = null;
 
             const conn = await mongoose.connect(process.env.MONGODB_URI, {
                 serverSelectionTimeoutMS: 30000,
@@ -64,6 +87,7 @@ const connectDB = async () => {
                     try {
                         await mongoose.connection.close();
                         isConnecting = false;
+                        readyPromise = null; // Reset ready promise on error
                         setTimeout(() => connectDB(), 5000);
                     } catch (closeError) {
                         console.error('Error closing connection:', closeError);
@@ -76,6 +100,7 @@ const connectDB = async () => {
                 try {
                     await mongoose.connection.close();
                     isConnecting = false;
+                    readyPromise = null; // Reset ready promise on disconnect
                     setTimeout(() => connectDB(), 5000);
                 } catch (closeError) {
                     console.error('Error closing connection:', closeError);
@@ -111,6 +136,7 @@ const connectDB = async () => {
                 const delay = Math.min(1000 * Math.pow(2, retryCount), 10000);
                 console.log(`Retrying connection in ${delay/1000} seconds... (Attempt ${retryCount + 1}/${maxRetries})`);
                 isConnecting = false;
+                readyPromise = null; // Reset ready promise on retry
                 return new Promise(resolve => {
                     setTimeout(() => {
                         connectWithRetry().then(resolve);
@@ -119,6 +145,7 @@ const connectDB = async () => {
             } else {
                 console.error('Max retries reached. Could not connect to MongoDB.');
                 isConnecting = false;
+                readyPromise = null; // Reset ready promise on failure
                 throw error;
             }
         }
@@ -132,5 +159,6 @@ const connectDB = async () => {
 // Export both the connection function and the mongoose instance
 module.exports = {
     connectDB,
-    mongoose
+    mongoose,
+    getReadyPromise
 }; 

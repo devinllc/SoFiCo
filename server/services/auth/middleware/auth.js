@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const { getReadyPromise } = require('../../../config/database');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'your-refresh-secret-key';
@@ -21,6 +22,9 @@ const generateToken = (user) => {
 // Verify JWT token
 const verifyToken = async (req, res, next) => {
   try {
+    // Ensure database is ready
+    await getReadyPromise();
+
     const token = req.header('Authorization')?.replace('Bearer ', '');
     
     if (!token) {
@@ -57,6 +61,9 @@ const authorize = (...roles) => {
 // Refresh token middleware
 const refreshToken = async (req, res) => {
   try {
+    // Ensure database is ready
+    await getReadyPromise();
+
     const { refreshToken } = req.body;
     
     if (!refreshToken) {

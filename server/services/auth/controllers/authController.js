@@ -1,10 +1,14 @@
 const User = require('../models/User');
 const { generateToken } = require('../middleware/auth');
 const jwt = require('jsonwebtoken');
+const { getReadyPromise } = require('../../../config/database');
 
 // Register new user
 const register = async (req, res) => {
   try {
+    // Ensure database is ready
+    await getReadyPromise();
+
     const { email, password, firstName, lastName, phone, role } = req.body;
 
     // Check if user already exists
@@ -45,6 +49,9 @@ const register = async (req, res) => {
 // Login user
 const login = async (req, res) => {
   try {
+    // Ensure database is ready
+    await getReadyPromise();
+
     const { email, password } = req.body;
 
     // Find user by email
@@ -91,15 +98,18 @@ const getProfile = async (req, res) => {
 
 // Update user profile
 const updateProfile = async (req, res) => {
-  const updates = Object.keys(req.body);
-  const allowedUpdates = ['firstName', 'lastName', 'phone', 'password'];
-  const isValidOperation = updates.every(update => allowedUpdates.includes(update));
-
-  if (!isValidOperation) {
-    return res.status(400).json({ error: 'Invalid updates' });
-  }
-
   try {
+    // Ensure database is ready
+    await getReadyPromise();
+
+    const updates = Object.keys(req.body);
+    const allowedUpdates = ['firstName', 'lastName', 'phone', 'password'];
+    const isValidOperation = updates.every(update => allowedUpdates.includes(update));
+
+    if (!isValidOperation) {
+      return res.status(400).json({ error: 'Invalid updates' });
+    }
+
     updates.forEach(update => req.user[update] = req.body[update]);
     await req.user.save();
     res.json(req.user.getPublicProfile());
@@ -111,6 +121,9 @@ const updateProfile = async (req, res) => {
 // Disable user account
 const disableAccount = async (req, res) => {
   try {
+    // Ensure database is ready
+    await getReadyPromise();
+
     req.user.isActive = false;
     await req.user.save();
     res.json({ message: 'Account disabled successfully' });
@@ -122,6 +135,9 @@ const disableAccount = async (req, res) => {
 // Get all users (admin only)
 const getAllUsers = async (req, res) => {
   try {
+    // Ensure database is ready
+    await getReadyPromise();
+
     const users = await User.find({}).select('-password');
     res.json(users);
   } catch (error) {
@@ -132,6 +148,9 @@ const getAllUsers = async (req, res) => {
 // Update user role (admin only)
 const updateUserRole = async (req, res) => {
   try {
+    // Ensure database is ready
+    await getReadyPromise();
+
     const { role } = req.body;
     const user = await User.findById(req.params.id);
     
@@ -150,6 +169,9 @@ const updateUserRole = async (req, res) => {
 // Refresh token
 const refreshToken = async (req, res) => {
   try {
+    // Ensure database is ready
+    await getReadyPromise();
+
     const { refreshToken } = req.body;
     
     if (!refreshToken) {
