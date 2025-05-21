@@ -6,17 +6,26 @@ const connectDB = async () => {
 
     const connectWithRetry = async () => {
         try {
+            // Set global mongoose options
+            mongoose.set('bufferCommands', false); // Disable command buffering
+            mongoose.set('strictQuery', true); // Enable strict query mode
+
             const conn = await mongoose.connect(process.env.MONGODB_URI, {
-                serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
-                socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
-                family: 4, // Use IPv4, skip trying IPv6
-                maxPoolSize: 10, // Maintain up to 10 socket connections
-                minPoolSize: 5, // Maintain at least 5 socket connections
-                maxIdleTimeMS: 60000, // Close idle connections after 60s
-                connectTimeoutMS: 10000, // Give up initial connection after 10s
-                heartbeatFrequencyMS: 10000, // Check server status every 10s
+                serverSelectionTimeoutMS: 30000, // Increase to 30s for initial connection
+                socketTimeoutMS: 45000,
+                family: 4,
+                maxPoolSize: 50, // Increase pool size
+                minPoolSize: 10, // Increase minimum connections
+                maxIdleTimeMS: 30000, // Reduce idle time
+                connectTimeoutMS: 30000, // Increase connection timeout
+                heartbeatFrequencyMS: 5000, // More frequent heartbeat
                 retryWrites: true,
                 retryReads: true,
+                w: 'majority', // Write concern
+                wtimeoutMS: 2500, // Write timeout
+                readPreference: 'primary', // Read from primary
+                compressors: 'zlib', // Enable compression
+                zlibCompressionLevel: 9, // Maximum compression
             });
 
             console.log(`MongoDB Connected: ${conn.connection.host}`);
@@ -24,15 +33,19 @@ const connectDB = async () => {
             // Handle connection errors after initial connection
             mongoose.connection.on('error', (err) => {
                 console.error('MongoDB connection error:', err);
-                if (err.name === 'MongoServerSelectionError') {
+                if (err.name === 'MongoServerSelectionError' || err.name === 'MongoNetworkError') {
                     console.log('Attempting to reconnect...');
-                    setTimeout(connectWithRetry, 5000);
+                    mongoose.connection.close().then(() => {
+                        setTimeout(connectWithRetry, 5000);
+                    });
                 }
             });
 
             mongoose.connection.on('disconnected', () => {
                 console.log('MongoDB disconnected. Attempting to reconnect...');
-                setTimeout(connectWithRetry, 5000);
+                mongoose.connection.close().then(() => {
+                    setTimeout(connectWithRetry, 5000);
+                });
             });
 
             // Handle process termination
@@ -47,19 +60,31 @@ const connectDB = async () => {
                 }
             });
 
+            // Add connection success handler
+            mongoose.connection.on('connected', () => {
+                console.log('MongoDB connection established successfully');
+                retryCount = 0; // Reset retry count on successful connection
+            });
+
         } catch (error) {
             retryCount++;
             console.error(`MongoDB connection attempt ${retryCount} failed:`, error.message);
             
             if (retryCount < maxRetries) {
-                console.log(`Retrying connection in 5 seconds... (Attempt ${retryCount + 1}/${maxRetries})`);
-                setTimeout(connectWithRetry, 5000);
+                const delay = Math.min(1000 * Math.pow(2, retryCount), 10000); // Exponential backoff
+                console.log(`Retrying connection in ${delay/1000} seconds... (Attempt ${retryCount + 1}/${maxRetries})`);
+                setTimeout(connectWithRetry, delay);
             } else {
                 console.error('Max retries reached. Could not connect to MongoDB.');
                 process.exit(1);
             }
         }
     };
+
+    // Clear any existing connections before connecting
+    if (mongoose.connection.readyState !== 0) {
+        await mongoose.connection.close();
+    }
 
     await connectWithRetry();
 };
