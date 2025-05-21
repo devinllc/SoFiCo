@@ -6,16 +6,19 @@ const authRoutes= require('./routes/authRoutes');
 const walletRoutes= require('./routes/walletRoutes');
 const cors = require('cors');
 
+// Import routes from services directory
+const authRoutes = require('./services/auth/routes/authRoutes');
+const walletRoutes = require('./services/wallet/routes/walletRoutes');
+const agentRoutes = require('./services/agent/routes/agentRoutes');
+const loanRoutes = require('./services/loan/routes/loanRoutes');
+const schemeRoutes = require('./services/scheme/routes/schemeRoutes');
+
 require("dotenv").config();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-// app.use(expressSession({
-//     resave: false,
-//     saveUninitialized: false,
-//     secret: process.env.EXPRESS_SESSION_SECRET,
-// }));
+
 
 
 
@@ -48,6 +51,9 @@ app.get("/", (req, res) => {
 // Routes
 app.use('/auth', authRoutes);
 app.use('/wallet', walletRoutes);
+app.use('/agent', agentRoutes);
+app.use('/loan', loanRoutes);
+app.use('/scheme', schemeRoutes);
 // app.listen(3000);// ✅ Only start server if not on Vercel
 if (process.env.NODE_ENV !== 'production') {
     const PORT = process.env.PORT || 3000;
