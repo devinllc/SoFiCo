@@ -42,11 +42,11 @@ app.get("/", (req, res) => {
 });
 
 // Routes
-app.use('/api/auth', authRoutes);
+app.use('/auth', authRoutes);
 // app.use('/wallet', walletRoutes);
-app.use('/api/agent', agentRoutes);
-app.use('/api/loan', loanRoutes);
-app.use('/api/scheme', schemeRoutes);
+app.use('/agent', agentRoutes);
+app.use('/loan', loanRoutes);
+app.use('/scheme', schemeRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
