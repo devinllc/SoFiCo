@@ -49,11 +49,11 @@ app.get("/", (req, res) => {
 });
 
 // Routes
-app.use('/auth', authRoutes);
-app.use('/wallet', walletRoutes);
-app.use('/agent', agentRoutes);
-app.use('/loan', loanRoutes);
-app.use('/scheme', schemeRoutes);
+// app.use('/auth', authRoutes);
+// app.use('/wallet', walletRoutes);
+// app.use('/agent', agentRoutes);
+// app.use('/loan', loanRoutes);
+// app.use('/scheme', schemeRoutes);
 // app.listen(3000);// ✅ Only start server if not on Vercel
 if (process.env.NODE_ENV !== 'production') {
     const PORT = process.env.PORT || 3000;
