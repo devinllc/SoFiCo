@@ -4,7 +4,9 @@ const path = require("path");
 const cors = require('cors');
 const authRoutes = require('./services/auth/routes/authRoutes');
 const walletRoutes = require('./services/wallet/routes/walletRoutes');
-
+const agentRoutes = require('./services/agent/routes/agentRoutes');
+const loanRoutes= require('./services/loan/routes/loanRoutes');
+const schemeRoutes = require('./services/scheme/routes/schemeRoutes');
 const app = express();
 
 require("dotenv").config();
@@ -44,10 +46,10 @@ app.get("/", (req, res) => {
 
 // Routes
 app.use('/auth', authRoutes);
-app.use('/wallet', walletRoutes);
-// app.use('/agent', agentRoutes);
-// app.use('/loan', loanRoutes);
-// app.use('/scheme', schemeRoutes);
+// app.use('/wallet', walletRoutes);
+app.use('/agent', agentRoutes);
+app.use('/loan', loanRoutes);
+app.use('/scheme', schemeRoutes);
 // app.listen(3000);// ✅ Only start server if not on Vercel
 if (process.env.NODE_ENV !== 'production') {
     const PORT = process.env.PORT || 3000;
