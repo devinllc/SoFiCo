@@ -1,5 +1,16 @@
 const mongoose = require('mongoose');
 
+// Validate MongoDB URI
+const validateMongoURI = (uri) => {
+    if (!uri) {
+        throw new Error('MongoDB URI is not defined');
+    }
+    if (!uri.startsWith('mongodb://') && !uri.startsWith('mongodb+srv://')) {
+        throw new Error('Invalid MongoDB URI: must start with mongodb:// or mongodb+srv://');
+    }
+    return uri;
+};
+
 // Disable command buffering globally
 mongoose.set('bufferCommands', false);
 mongoose.set('strictQuery', true);
@@ -45,6 +56,9 @@ const connectDB = async () => {
 
     const connectWithRetry = async () => {
         try {
+            // Validate MongoDB URI
+            const mongoURI = validateMongoURI(process.env.MONGODB_URI);
+
             // Clear any existing connections
             if (mongoose.connection.readyState !== 0) {
                 await mongoose.connection.close();
@@ -53,7 +67,7 @@ const connectDB = async () => {
             // Reset ready promise
             readyPromise = null;
 
-            const conn = await mongoose.connect(process.env.MONGODB_URI, {
+            const conn = await mongoose.connect(mongoURI, {
                 serverSelectionTimeoutMS: 30000,
                 socketTimeoutMS: 45000,
                 family: 4,
@@ -69,13 +83,12 @@ const connectDB = async () => {
                 readPreference: 'primary',
                 compressors: 'zlib',
                 zlibCompressionLevel: 9,
-                // Updated buffering options
                 autoIndex: true,
                 autoCreate: true,
-                // Add these options to prevent buffering
                 bufferCommands: false,
                 useNewUrlParser: true,
-                useUnifiedTopology: true
+                useUnifiedTopology: true,
+                authSource: 'admin'
             });
 
             console.log(`MongoDB Connected: ${conn.connection.host}`);
@@ -90,7 +103,7 @@ const connectDB = async () => {
                     try {
                         await mongoose.connection.close();
                         isConnecting = false;
-                        readyPromise = null; // Reset ready promise on error
+                        readyPromise = null;
                         setTimeout(() => connectDB(), 5000);
                     } catch (closeError) {
                         console.error('Error closing connection:', closeError);
@@ -103,7 +116,7 @@ const connectDB = async () => {
                 try {
                     await mongoose.connection.close();
                     isConnecting = false;
-                    readyPromise = null; // Reset ready promise on disconnect
+                    readyPromise = null;
                     setTimeout(() => connectDB(), 5000);
                 } catch (closeError) {
                     console.error('Error closing connection:', closeError);
@@ -139,7 +152,7 @@ const connectDB = async () => {
                 const delay = Math.min(1000 * Math.pow(2, retryCount), 10000);
                 console.log(`Retrying connection in ${delay/1000} seconds... (Attempt ${retryCount + 1}/${maxRetries})`);
                 isConnecting = false;
-                readyPromise = null; // Reset ready promise on retry
+                readyPromise = null;
                 return new Promise(resolve => {
                     setTimeout(() => {
                         connectWithRetry().then(resolve);
@@ -148,7 +161,7 @@ const connectDB = async () => {
             } else {
                 console.error('Max retries reached. Could not connect to MongoDB.');
                 isConnecting = false;
-                readyPromise = null; // Reset ready promise on failure
+                readyPromise = null;
                 throw error;
             }
         }
