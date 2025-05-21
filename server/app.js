@@ -2,11 +2,11 @@ const express = require("express");
 const app = express();
 const cookieParser = require("cookie-parser");
 const path = require("path");
-const authRoutes= require('./routes/authRoutes');
-const walletRoutes= require('./routes/walletRoutes');
+// const authRoutes= require('./routes/authRoutes');
+// const walletRoutes= require('./routes/walletRoutes');
 const cors = require('cors');
 
-// Import routes from services directory
+// Import routes
 const authRoutes = require('./services/auth/routes/authRoutes');
 const walletRoutes = require('./services/wallet/routes/walletRoutes');
 const agentRoutes = require('./services/agent/routes/agentRoutes');
