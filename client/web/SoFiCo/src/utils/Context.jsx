@@ -6,7 +6,7 @@ function Context() {
 
     const getUser = async ()=>{
         try{
-            const {data} = axios("/user")
+            const {data} = axios("/auth/users")
         }catch (err) {
             console.log(err)
         }
