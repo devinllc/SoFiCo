@@ -2,7 +2,8 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const path = require("path");
 const cors = require('cors');
-const authRoutes = require('./services/auth/routes/authRoutes')
+const authRoutes = require('./services/auth/routes/authRoutes');
+const walletRoutes = require('./services/wallet/routes/walletRoutes');
 
 const app = express();
 
@@ -43,7 +44,7 @@ app.get("/", (req, res) => {
 
 // Routes
 app.use('/auth', authRoutes);
-// app.use('/wallet', walletRoutes);
+app.use('/wallet', walletRoutes);
 // app.use('/agent', agentRoutes);
 // app.use('/loan', loanRoutes);
 // app.use('/scheme', schemeRoutes);
