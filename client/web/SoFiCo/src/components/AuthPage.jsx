@@ -1,34 +1,66 @@
 import React, { useState } from "react";
+import axios from "axios";
 
 export default function AuthPage() {
+  const [firstName, setfirstName] = useState("") 
+  const [lastName, setlastName] = useState("") 
+  const [email, setemail] = useState("") 
+  const [phone, setphone] = useState("") 
+  const [password, setpassword] = useState("") 
+
+
   const [showRegister, setShowRegister] = useState(false);
   const [loginData, setLoginData] = useState({ email: "", password: "" });
-  const [registerData, setRegisterData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    phone: ""
-  });
 
   const handleLoginChange = (e) => {
     setLoginData({ ...loginData, [e.target.name]: e.target.value });
   };
 
-  const handleRegisterChange = (e) => {
-    setRegisterData({ ...registerData, [e.target.name]: e.target.value });
-  };
 
-  const handleLoginSubmit = (e) => {
-    e.preventDefault();
-    console.log("Login data:", loginData);
-    // Add your login logic here
-  };
+  // const handleLoginSubmit = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     const newUser = {
+  //       firstName,
+  //       lastName,
+  //       email,
+  //       password,
+  //       phone
+  //     }
+  //     console.log(newUser)
+  //     // const response = await axios.post(
+  //     //   "https://so-fi-co.vercel.app/auth/login",
+  //     //   loginData
+  //     // );
+  //     // console.log("Login successful:", response.data);
+  //     alert("Login successful!");
+  //     // Redirect or handle success
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // };
 
-  const handleRegisterSubmit = (e) => {
+  const handleRegisterSubmit = async (e) => {
     e.preventDefault();
-    console.log("Register data:", registerData);
-    // Add your register logic here
+    try {
+      const newUser = {
+        firstName,
+        lastName,
+        email,
+        password,
+        phone
+      }
+      console.log(newUser)
+      const response = await axios.post("https://so-fi-co.vercel.app/auth/register", newUser, {
+        headers: { "Content-Type": "application/json" },
+      });
+      console.log("Registration successful:", response.data);
+      alert("Registration successful!");
+      setShowRegister(false); // Switch to login view
+    } catch (error) {
+      console.error("Registration failed:", error.response?.data || error.message);
+      alert("Registration failed. Please try again.");
+    }
   };
 
   return (
@@ -42,7 +74,7 @@ export default function AuthPage() {
               {showRegister ? "Join Our Community" : "Welcome Back!"}
             </h2>
             <p className="mb-8 text-lg opacity-90">
-              {showRegister 
+              {showRegister
                 ? "Start your journey with us and discover amazing opportunities."
                 : "Sign in to continue your journey with us."}
             </p>
@@ -58,7 +90,11 @@ export default function AuthPage() {
 
         {/* Right Panel */}
         <div className="w-full md:w-1/2 flex flex-col justify-center items-center px-8 py-12 bg-white">
-          <div className={`w-full max-w-sm transition-all duration-500 transform ${showRegister ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'}`}>
+          <div
+            className={`w-full max-w-sm transition-all duration-500 transform ${
+              showRegister ? "translate-x-0 opacity-100" : "translate-x-0 opacity-100"
+            }`}
+          >
             {!showRegister ? (
               <div className="animate-fade-in">
                 <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">Sign in</h2>
@@ -91,7 +127,10 @@ export default function AuthPage() {
                   </button>
                 </form>
                 <div className="mt-6 text-center">
-                  <a href="#" className="text-blue-500 hover:text-blue-600 transition-colors duration-300">
+                  <a
+                    href="#"
+                    className="text-blue-500 hover:text-blue-600 transition-colors duration-300"
+                  >
                     Forgot your password?
                   </a>
                 </div>
@@ -103,47 +142,42 @@ export default function AuthPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <input
                       type="text"
-                      name="firstName"
                       placeholder="First Name"
-                      value={registerData.firstName}
-                      onChange={handleRegisterChange}
+                      onChange={(e)=> setfirstName(e.target.value)}
+                      value={firstName}
                       className="w-full px-5 py-3 rounded-full bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 placeholder-gray-400 font-medium transition-all duration-300"
                       required
                     />
                     <input
                       type="text"
-                      name="lastName"
                       placeholder="Last Name"
-                      value={registerData.lastName}
-                      onChange={handleRegisterChange}
+                      onChange={(e)=> setlastName(e.target.value)}
+                      value={lastName}
                       className="w-full px-5 py-3 rounded-full bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 placeholder-gray-400 font-medium transition-all duration-300"
                       required
                     />
                   </div>
                   <input
                     type="email"
-                    name="email"
                     placeholder="Email"
-                    value={registerData.email}
-                    onChange={handleRegisterChange}
+                    onChange={(e)=> setemail(e.target.value)}
+                    value={email}               
                     className="w-full px-5 py-3 rounded-full bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 placeholder-gray-400 font-medium transition-all duration-300"
                     required
                   />
                   <input
                     type="tel"
-                    name="phone"
                     placeholder="Phone Number"
-                    value={registerData.phone}
-                    onChange={handleRegisterChange}
+                    onChange={(e)=> setphone(e.target.value)}
+                    value={phone}
                     className="w-full px-5 py-3 rounded-full bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 placeholder-gray-400 font-medium transition-all duration-300"
                     required
                   />
                   <input
                     type="password"
-                    name="password"
                     placeholder="Password"
-                    value={registerData.password}
-                    onChange={handleRegisterChange}
+                    onChange={(e)=> setpassword(e.target.value)}
+                    value={password}
                     className="w-full px-5 py-3 rounded-full bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 placeholder-gray-400 font-medium transition-all duration-300"
                     required
                   />

@@ -1,205 +1,225 @@
-import React, { useState } from 'react';
-import logo from '../assets/image.png';
-import { NavLink, Routes, Route } from 'react-router-dom';
-import Home from './Home';
-import AuthPage from './AuthPage'
+import React, { useState } from "react";
 
-import Dashboard from './Dashboard'
+const tabs = [
+  { label: "Dashboard", icon: "🏠" },
+  { label: "Loan", icon: "💰" },
+  { label: "Schemes", icon: "📊" },
+  { label: "Profile", icon: "👤" },
+];
 
-export default function Navbar() {
-  const [menuOpen, setMenuOpen] = useState(false);
+export default function FintechDashboard() {
+  const [activeTab, setActiveTab] = useState("Dashboard");
 
-  // Nav links for reuse
-  const navLinks = (
-    <>
-      <NavLink
-        to="/"
-        end
-        className={({ isActive }) =>
-          `relative px-3 py-1 rounded-full font-medium transition-all duration-200
-          ${isActive ? "bg-white/80 text-[#0a3d4d] shadow" : "text-white hover:bg-white/20 hover:text-[#d6ff4b]"}`
-        }
-        onClick={() => setMenuOpen(false)}
-      >
-        Home
-      </NavLink>
-      <NavLink
-        to="/about"
-        className={({ isActive }) =>
-          `relative px-3 py-1 rounded-full font-medium transition-all duration-200
-          ${isActive ? "bg-white/80 text-[#0a3d4d] shadow" : "text-white hover:bg-white/20 hover:text-[#d6ff4b]"}`
-        }
-        onClick={() => setMenuOpen(false)}
-      >
-        About
-      </NavLink>
-      <NavLink
-        to="/featured"
-        className={({ isActive }) =>
-          `relative px-3 py-1 rounded-full font-medium transition-all duration-200
-          ${isActive ? "bg-white/80 text-[#0a3d4d] shadow" : "text-white hover:bg-white/20 hover:text-[#d6ff4b]"}`
-        }
-        onClick={() => setMenuOpen(false)}
-      >
-        Featured
-      </NavLink>
-      <NavLink
-        to="/services"
-        className={({ isActive }) =>
-          `relative px-3 py-1 rounded-full font-medium transition-all duration-200
-          ${isActive ? "bg-white/80 text-[#0a3d4d] shadow" : "text-white hover:bg-white/20 hover:text-[#d6ff4b]"}`
-        }
-        onClick={() => setMenuOpen(false)}
-      >
-        Services
-      </NavLink>
-      <NavLink
-        to="/login"
-        className={({ isActive }) =>
-          `ml-0 mt-4 px-5 py-2 rounded-full border border-white/40 font-semibold text-white transition-all duration-200
-          bg-gradient-to-r from-green-400/90 to-green-500/80 shadow-md hover:from-green-300 hover:to-green-400 hover:text-[#0a3d4d]
-          ${isActive ? "ring-2 ring-green-400" : ""}`
-        }
-        onClick={() => setMenuOpen(false)}
-      >
-        Sign In
-      </NavLink>
-    </>
-  );
+  // Dummy Data (same as before)
+  const userName = "Riya Sharma";
+  const totalBalance = 325000;
+  const income = 120000;
+  const expense = 75000;
+  const recentActivities = [
+    { title: "Loan Disbursed", amount: "+₹45,000", from: "Sofico Pvt. Ltd.", date: "21 May 2025" },
+    { title: "Salary Credited", amount: "+₹90,000", from: "ZenoTech Solutions", date: "20 May 2025" },
+    { title: "Utility Payment", amount: "-₹2,300", from: "Mahanagar Gas", date: "19 May 2025" },
+  ];
+  const loanDetails = {
+    amount: 45000,
+    date: "21 May 2025",
+    nextPayment: 5000,
+    dueDate: "21 Jun 2025",
+  };
+  const businessLoan = { amount: 25000, date: "10 May 2025" };
+  const schemes = [
+    { name: "Dream Home", members: 5, status: "ACTIVE", targetAmount: 500000, currentAmount: 250000, duration: 12 },
+    { name: "Vacation Fund", members: 3, status: "ACTIVE", targetAmount: 100000, currentAmount: 40000, duration: 6 },
+  ];
+  const profile = {
+    name: "Riya Sharma",
+    email: "riya.sharma@email.com",
+    phone: "+91 98765 43210",
+    address: "22, Green Park, Mumbai, 400001",
+    documents: [
+      { name: "Aadhar Card", actions: ["View", "Download"] },
+      { name: "Bank Statement", actions: ["View", "Download"] },
+      { name: "PAN Card", actions: ["View", "Download"] },
+    ],
+  };
 
   return (
-    <>
-      {/* Desktop Navbar */}
-      <nav className="w-full flex justify-center items-center pt-8 pb-4 bg-transparent relative z-20">
-        <div className="hidden sm:flex backdrop-blur-lg bg-white/10 border border-white/20 shadow-xl rounded-full items-center px-6 py-2 gap-6"
-          style={{
-            minWidth: 320,
-            minHeight: 60,
-            boxShadow: '0 4px 32px 0 rgba(0,0,0,0.18), 0 1.5px 6px 0 rgba(0,0,0,0.10)'
-          }}
-        >
-          {/* Logo */}
-          <div className="flex items-center pr-4 border-r border-white/20">
-            <img src={logo} alt="Logo" className="w-20 h-10 object-fit object-contain" />
-          </div>
-          {/* Nav Links */}
-          <div className="flex space-x-6">
-            <NavLink
-              to="/"
-              end
-              className={({ isActive }) =>
-                `relative px-3 py-1 rounded-full font-medium transition-all duration-200
-                ${isActive ? "bg-white/80 text-[#0a3d4d] shadow" : "text-white hover:bg-white/20 hover:text-[#d6ff4b]"}`
-              }
-            >
-              Home
-            </NavLink>
-            <NavLink
-              to="/about"
-              className={({ isActive }) =>
-                `relative px-3 py-1 rounded-full font-medium transition-all duration-200
-                ${isActive ? "bg-white/80 text-[#0a3d4d] shadow" : "text-white hover:bg-white/20 hover:text-[#d6ff4b]"}`
-              }
-            >
-              About
-            </NavLink>
-            <NavLink
-              to="/featured"
-              className={({ isActive }) =>
-                `relative px-3 py-1 rounded-full font-medium transition-all duration-200
-                ${isActive ? "bg-white/80 text-[#0a3d4d] shadow" : "text-white hover:bg-white/20 hover:text-[#d6ff4b]"}`
-              }
-            >
-              Featured
-            </NavLink>
-            <NavLink
-              to="/services"
-              className={({ isActive }) =>
-                `relative px-3 py-1 rounded-full font-medium transition-all duration-200
-                ${isActive ? "bg-white/80 text-[#0a3d4d] shadow" : "text-white hover:bg-white/20 hover:text-[#d6ff4b]"}`
-              }
-            >
-              Services
-            </NavLink>
-            
-          </div>
-          {/* Sign In Button */}
-          <NavLink
-            to="/login"
-            className={({ isActive }) =>
-              `ml-4 px-5 py-2 rounded-full border border-white/40 font-semibold text-white transition-all duration-200
-              bg-gradient-to-r from-green-400/90 to-green-500/80 shadow-md hover:from-green-300 hover:to-green-400 hover:text-[#0a3d4d]
-              ${isActive ? "ring-2 ring-green-400" : ""}`
-            }
-          >
-            Sign In
-          </NavLink>
+    <div className="min-h-screen bg-gradient-to-br from-[#0e2d3c] to-[#116466] flex text-white">
+      {/* Sidebar */}
+      <aside className="w-20 md:w-60 bg-[#0e2d3c] flex flex-col py-8 px-2 md:px-6 shadow-lg">
+        <div className="mb-10 flex items-center justify-center md:justify-start">
+          <span className="text-2xl md:text-3xl font-bold tracking-wide">SoFiCo</span>
         </div>
-
-        {/* Mobile Hamburger */}
-        <div className="sm:hidden flex w-full items-center justify-between px-4">
-          <img src={logo} alt="Logo" className="w-22 h-12 object-fit object-contain" />
-          <button
-            className="z-40 flex flex-col justify-center items-center w-10 h-10 rounded-full bg-white/10 border border-white/20 shadow-lg backdrop-blur-lg"
-            onClick={() => setMenuOpen(true)}
-            aria-label="Open menu"
-          >
-            <span className="block w-6 h-0.5 bg-white transition-all duration-300"></span>
-            <span className="block w-6 h-0.5 bg-white transition-all duration-300 my-1"></span>
-            <span className="block w-6 h-0.5 bg-white transition-all duration-300"></span>
-          </button>
-        </div>
-
-        {/* Mobile Left Drawer Overlay */}
-        <div
-          className={`fixed inset-0 z-50 transition-transform duration-500 ${
-            menuOpen ? "translate-x-0" : "-translate-x-full"
-          } sm:hidden`}
-        >
-          {/* Overlay background */}
-          <div
-            className={`absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-500 ${
-              menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-            }`}
-            onClick={() => setMenuOpen(false)}
-          ></div>
-          {/* Slide-in Menu */}
-          <div
-            className={`relative h-full w-4/5 max-w-xs bg-[#151b23] shadow-2xl flex flex-col pt-8 pb-10 px-4 transition-transform duration-500 ${
-              menuOpen ? "translate-x-0" : "-translate-x-full"
-            }`}
-          >
-            {/* Cross Icon */}
+        <nav className="flex flex-col gap-2">
+          {tabs.map((tab) => (
             <button
-              className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center rounded-full hover:bg-white/10 transition"
-              onClick={() => setMenuOpen(false)}
-              aria-label="Close menu"
+              key={tab.label}
+              onClick={() => setActiveTab(tab.label)}
+              className={`flex items-center gap-3 px-3 py-3 rounded-lg transition font-medium
+                ${activeTab === tab.label ? "bg-[#116466] text-yellow-300" : "hover:bg-[#144f5f] text-white"}`}
             >
-              <svg
-                className="w-7 h-7 text-white"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2.5}
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <span className="text-xl">{tab.icon}</span>
+              <span className="hidden md:inline">{tab.label}</span>
             </button>
-            {/* Nav Links */}
-            <div className="flex flex-col gap-2 mt-10">{navLinks}</div>
-          </div>
-        </div>
-      </nav>
+          ))}
+        </nav>
+      </aside>
 
-      {/* Routes */}
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<div className="pt-20">About Page</div>} />
-        <Route path="/featured" element={<div className="pt-20">Featured Page</div>} />
-        {/* <Route path="/services" element={<div className="pt-20">Services Page</div>} /> */}
-        {/* <Route path="/dashboard" element={<Dashboard />} /> */}
-        <Route path="/login" element={<AuthPage/>} />
-      </Routes>
-    </>
+      {/* Main Content */}
+      <main className="flex-1 p-4 md:p-10 overflow-auto">
+        {activeTab === "Dashboard" && (
+          <section>
+            <h1 className="text-2xl md:text-3xl font-bold mb-6">Welcome Back, {userName}</h1>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+              <div className="bg-[#144f5f] rounded-lg p-6 shadow-lg">
+                <h2 className="text-lg font-semibold mb-2">Total Balance</h2>
+                <p className="text-2xl font-bold">₹{totalBalance.toLocaleString()}</p>
+              </div>
+              <div className="bg-[#116466] rounded-lg p-6 shadow-lg">
+                <h2 className="text-lg font-semibold mb-2">Income</h2>
+                <p className="text-2xl font-bold text-green-400">+₹{income.toLocaleString()}</p>
+              </div>
+              <div className="bg-[#0e2d3c] rounded-lg p-6 shadow-lg">
+                <h2 className="text-lg font-semibold mb-2">Expense</h2>
+                <p className="text-2xl font-bold text-red-400">-₹{expense.toLocaleString()}</p>
+              </div>
+            </div>
+            <h2 className="text-xl font-semibold mb-3">Recent Activity</h2>
+            <div className="space-y-4">
+              {recentActivities.map(({ title, amount, from, date }, idx) => (
+                <div key={idx} className="bg-[#0e2d3c] rounded-md p-4 flex justify-between items-center shadow-md">
+                  <div>
+                    <p className="font-semibold">{title} <span className="text-green-400">{amount}</span></p>
+                    <p className="text-sm text-gray-300">{`from ${from}`}</p>
+                  </div>
+                  <p className="text-sm text-gray-400">{date}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {activeTab === "Loan" && (
+          <section>
+            <h2 className="text-2xl font-semibold mb-6">Loan Details</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-4">
+              <div>
+                <p className="font-semibold">Amount</p>
+                <p>₹{loanDetails.amount.toLocaleString()}</p>
+              </div>
+              <div>
+                <p className="font-semibold">Date</p>
+                <p>{loanDetails.date}</p>
+              </div>
+              <div>
+                <p className="font-semibold">Next Payment</p>
+                <p>₹{loanDetails.nextPayment.toLocaleString()}</p>
+              </div>
+              <div>
+                <p className="font-semibold">Due Date</p>
+                <p>{loanDetails.dueDate}</p>
+              </div>
+            </div>
+            <div className="flex gap-4 mb-6">
+              <button className="bg-green-500 hover:bg-green-600 rounded px-4 py-2 font-semibold">
+                View Details
+              </button>
+              <button className="bg-blue-500 hover:bg-blue-600 rounded px-4 py-2 font-semibold">
+                Make Payments
+              </button>
+            </div>
+            <div className="bg-[#0e2d3c] rounded-md p-4">
+              <h3 className="font-semibold mb-2">Business Loan</h3>
+              <p>Amount: ₹{businessLoan.amount.toLocaleString()}</p>
+              <p>Date: {businessLoan.date}</p>
+            </div>
+          </section>
+        )}
+
+        {activeTab === "Schemes" && (
+          <section>
+            <h2 className="text-2xl font-semibold mb-6">Schemes</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {schemes.map(({ name, members, status, targetAmount, currentAmount, duration }, idx) => (
+                <div key={idx} className="bg-[#116466] rounded-lg p-6 shadow-lg">
+                  <div className="flex justify-between items-center mb-3">
+                    <h3 className="text-xl font-semibold">{name}</h3>
+                    <span className="text-sm bg-green-600 px-2 py-1 rounded">{status}</span>
+                  </div>
+                  <p className="mb-1">Members: {members}</p>
+                  <div className="mb-3">
+                    <p className="font-semibold">Progress</p>
+                    <div className="w-full bg-gray-700 rounded-full h-4">
+                      <div
+                        className="bg-green-400 h-4 rounded-full"
+                        style={{ width: `${(currentAmount / targetAmount) * 100}%` }}
+                        aria-label={`Progress: ${(currentAmount / targetAmount) * 100}%`}
+                      />
+                    </div>
+                    <p className="text-sm mt-1">
+                      ₹{currentAmount.toLocaleString()} / ₹{targetAmount.toLocaleString()}
+                    </p>
+                  </div>
+                  <p>Duration: {duration} Month{duration > 1 ? "s" : ""}</p>
+                  <div className="mt-4 flex gap-4">
+                    <button className="bg-blue-500 hover:bg-blue-600 rounded px-4 py-2 font-semibold">
+                      View Details
+                    </button>
+                    <button className="bg-green-500 hover:bg-green-600 rounded px-4 py-2 font-semibold">
+                      Contribute
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {activeTab === "Profile" && (
+          <section className="max-w-3xl mx-auto">
+            <h2 className="text-2xl font-semibold mb-6">Profile</h2>
+            <div className="flex flex-col sm:flex-row items-center gap-6 mb-6">
+              <div className="w-24 h-24 rounded-full bg-gray-600 flex items-center justify-center text-3xl font-bold uppercase">
+                {profile.name.charAt(0)}
+              </div>
+              <div>
+                <p className="text-xl font-semibold">{profile.name}</p>
+                <p className="text-gray-300">{profile.email}</p>
+              </div>
+            </div>
+            <div className="mb-6">
+              <h3 className="font-semibold mb-2">Personal Information</h3>
+              <p><strong>Phone:</strong> {profile.phone}</p>
+              <p><strong>Address:</strong> {profile.address}</p>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-4">Documents</h3>
+              <ul className="space-y-3">
+                {profile.documents.map(({ name, actions }, idx) => (
+                  <li key={idx} className="flex justify-between items-center bg-[#116466] rounded-md p-3">
+                    <span>{name}</span>
+                    <div className="space-x-3">
+                      {actions.map((action) => (
+                        <button key={action} className="bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded text-sm">
+                          {action}
+                        </button>
+                      ))}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="mt-6 flex gap-4 justify-center">
+              <button className="bg-yellow-500 hover:bg-yellow-600 rounded px-6 py-2 font-semibold">
+                Edit Profile
+              </button>
+              <button className="bg-red-600 hover:bg-red-700 rounded px-6 py-2 font-semibold">
+                Logout
+              </button>
+            </div>
+          </section>
+        )}
+      </main>
+    </div>
   );
 }

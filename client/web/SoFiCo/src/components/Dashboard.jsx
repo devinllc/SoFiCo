@@ -1,118 +1,261 @@
-// Dashboard.jsx
-import { FaUserCircle } from "react-icons/fa";
+import React from "react";
 
-export default function Dashboard() {
+const Dashboard = () => {
+  const userName = "Riya Sharma";
+
+  // Sample Data
+  const totalBalance = 325000;
+  const income = 120000;
+  const expense = 75000;
+
+  const recentActivities = [
+    {
+      title: "Loan Disbursed",
+      amount: "+₹45,000",
+      from: "Sofico Pvt. Ltd.",
+      date: "21 May 2025",
+    },
+    {
+      title: "Salary Credited",
+      amount: "+₹90,000",
+      from: "ZenoTech Solutions",
+      date: "20 May 2025",
+    },
+    {
+      title: "Utility Payment",
+      amount: "-₹2,300",
+      from: "Mahanagar Gas",
+      date: "19 May 2025",
+    },
+  ];
+
+  const loanDetails = {
+    amount: 45000,
+    date: "21 May 2025",
+    nextPayment: 5000,
+    dueDate: "21 Jun 2025",
+  };
+
+  const businessLoan = {
+    amount: 25000,
+    date: "10 May 2025",
+  };
+
+  const schemes = [
+    {
+      name: "Dream Home",
+      members: 5,
+      status: "ACTIVE",
+      targetAmount: 500000,
+      currentAmount: 250000,
+      duration: 12,
+    },
+    {
+      name: "Vacation Fund",
+      members: 3,
+      status: "ACTIVE",
+      targetAmount: 100000,
+      currentAmount: 40000,
+      duration: 6,
+    },
+  ];
+
+  const profile = {
+    name: "Riya Sharma",
+    email: "riya.sharma@email.com",
+    phone: "+91 98765 43210",
+    address: "22, Green Park, Mumbai, 400001",
+    documents: [
+      { name: "Aadhar Card", actions: ["View", "Download"] },
+      { name: "Bank Statement", actions: ["View", "Download"] },
+      { name: "PAN Card", actions: ["View", "Download"] },
+    ],
+  };
+
   return (
-    <div className="min-h-screen bg-gray-100 flex">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-lg flex flex-col">
-        <div className="p-6 font-bold text-xl text-blue-700">eazy bank</div>
-        <nav className="flex-1">
-          <ul>
-            <li className="p-4 bg-blue-100 rounded-lg m-2 font-semibold">Dashboard</li>
-            <li className="p-4 hover:bg-blue-50 rounded-lg m-2">Transaction</li>
-            <li className="p-4 hover:bg-blue-50 rounded-lg m-2">Payment</li>
-            <li className="p-4 hover:bg-blue-50 rounded-lg m-2">Card</li>
-            <li className="p-4 hover:bg-blue-50 rounded-lg m-2">Insights</li>
-            <li className="p-4 hover:bg-blue-50 rounded-lg m-2">Settings</li>
-          </ul>
-        </nav>
-        <div className="p-4 text-gray-400">Logout</div>
-      </aside>
+    <div className="min-h-screen bg-gradient-to-br from-[#0e2d3c] to-[#116466] text-white p-6 font-sans">
+      {/* Welcome */}
+      <h1 className="text-3xl font-bold mb-6">Welcome Back, {userName}</h1>
 
-      {/* Main Content */}
-      <main className="flex-1 p-8 space-y-8">
-        {/* Top Stats */}
-        <section className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {[
-            { label: "Balance", value: "$3,596" },
-            { label: "Income", value: "$421" },
-            { label: "Expenses", value: "$164" },
-            { label: "Savings", value: "$257" },
-          ].map((stat) => (
-            <div key={stat.label} className="bg-white p-6 rounded-xl shadow text-center">
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <div className="text-gray-500">{stat.label}</div>
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+        <div className="bg-[#144f5f] rounded-lg p-6 shadow-lg">
+          <h2 className="text-lg font-semibold mb-2">Total Balance</h2>
+          <p className="text-2xl font-bold">₹{totalBalance.toLocaleString()}</p>
+        </div>
+        <div className="bg-[#116466] rounded-lg p-6 shadow-lg">
+          <h2 className="text-lg font-semibold mb-2">Income</h2>
+          <p className="text-2xl font-bold text-green-400">+₹{income.toLocaleString()}</p>
+        </div>
+        <div className="bg-[#0e2d3c] rounded-lg p-6 shadow-lg">
+          <h2 className="text-lg font-semibold mb-2">Expense</h2>
+          <p className="text-2xl font-bold text-red-400">-₹{expense.toLocaleString()}</p>
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <section className="mb-10">
+        <h2 className="text-2xl font-semibold mb-4">Quick Action</h2>
+        <div className="flex flex-wrap gap-4">
+          {["Loan", "Saving", "Pay", "History"].map((action) => (
+            <button
+              key={action}
+              className="bg-[#144f5f] hover:bg-[#116466] transition rounded-md px-6 py-3 font-medium shadow-md"
+            >
+              {action}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* Recent Activity */}
+      <section className="mb-10">
+        <h2 className="text-2xl font-semibold mb-4">Recent Activity</h2>
+        <div className="space-y-4">
+          {recentActivities.map(({ title, amount, from, date }, idx) => (
+            <div
+              key={idx}
+              className="bg-[#0e2d3c] rounded-md p-4 flex justify-between items-center shadow-md"
+            >
+              <div>
+                <p className="font-semibold">{title} <span className="text-green-400">{amount}</span></p>
+                <p className="text-sm text-gray-300">{`from ${from}`}</p>
+              </div>
+              <p className="text-sm text-gray-400">{date}</p>
             </div>
           ))}
-        </section>
+        </div>
+      </section>
 
-        {/* Finances Chart Placeholder */}
-        <section className="bg-white rounded-xl shadow p-6">
-          <div className="font-semibold mb-2">Finances</div>
-          {/* Replace with Chart.js or similar */}
-          <div className="h-40 bg-gradient-to-r from-blue-100 to-blue-200 rounded"></div>
-        </section>
-
-        {/* Bottom Grid: Transaction History & Quick Actions */}
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Transaction History */}
-          <div className="bg-white rounded-xl shadow p-6">
-            <div className="font-semibold mb-4">Transaction History</div>
-            <ul>
-              {[
-                { name: "Aaron Evans", type: "Food", date: "March 29, 2022", amount: "$45" },
-                { name: "Clement Stewart", type: "Shopping", date: "March 28, 2022", amount: "-$241" },
-                { name: "Jessica Johanie", type: "Clothes", date: "March 28, 2022", amount: "$100" },
-              ].map((tx) => (
-                <li key={tx.name} className="flex items-center justify-between py-2 border-b">
-                  <div className="flex items-center space-x-2">
-                    <FaUserCircle className="text-gray-400 text-2xl" />
-                    <div>
-                      <div className="font-medium">{tx.name}</div>
-                      <div className="text-xs text-gray-400">{tx.type}</div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="font-semibold">{tx.amount}</div>
-                    <div className="text-xs text-gray-400">{tx.date}</div>
-                  </div>
-                </li>
-              ))}
-            </ul>
+      {/* Loan Tab */}
+      <section className="mb-10 bg-[#144f5f] rounded-lg p-6 shadow-lg">
+        <h2 className="text-2xl font-semibold mb-4">Loan Details</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 text-center mb-4">
+          <div>
+            <p className="font-semibold">Amount</p>
+            <p>₹{loanDetails.amount.toLocaleString()}</p>
           </div>
-
-          {/* Quick Transaction & Goals */}
-          <div className="space-y-6">
-            {/* Quick Transaction */}
-            <div className="bg-white rounded-xl shadow p-6">
-              <div className="font-semibold mb-4">Quick Transaction</div>
-              <div className="flex space-x-4 mb-4">
-                {["Michael", "Badjan", "Ahmed", "Calvin"].map((name) => (
-                  <button key={name} className="bg-blue-100 rounded-full p-2">
-                    <FaUserCircle className="text-blue-500 text-xl" />
-                  </button>
-                ))}
-              </div>
-              <button className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold">Send</button>
-            </div>
-            {/* My Goals */}
-            <div className="bg-white rounded-xl shadow p-6">
-              <div className="font-semibold mb-4">My Goals</div>
-              <div>
-                <div className="mb-2">
-                  <div className="flex justify-between text-sm">
-                    <span>New Mac</span>
-                    <span>80%</span>
-                  </div>
-                  <div className="h-2 bg-blue-100 rounded">
-                    <div className="h-2 bg-blue-500 rounded w-4/5"></div>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between text-sm">
-                    <span>New Mission 14"</span>
-                    <span>40%</span>
-                  </div>
-                  <div className="h-2 bg-blue-100 rounded">
-                    <div className="h-2 bg-blue-500 rounded w-2/5"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div>
+            <p className="font-semibold">Date</p>
+            <p>{loanDetails.date}</p>
           </div>
-        </section>
-      </main>
+          <div>
+            <p className="font-semibold">Next Payment</p>
+            <p>₹{loanDetails.nextPayment.toLocaleString()}</p>
+          </div>
+          <div>
+            <p className="font-semibold">Due Date</p>
+            <p>{loanDetails.dueDate}</p>
+          </div>
+          <div className="flex justify-center gap-4">
+            <button className="bg-green-500 hover:bg-green-600 rounded px-4 py-2 font-semibold">
+              View Details
+            </button>
+            <button className="bg-blue-500 hover:bg-blue-600 rounded px-4 py-2 font-semibold">
+              Make Payments
+            </button>
+          </div>
+        </div>
+
+        <div className="bg-[#0e2d3c] rounded-md p-4">
+          <h3 className="font-semibold mb-2">Business Loan</h3>
+          <p>Amount: ₹{businessLoan.amount.toLocaleString()}</p>
+          <p>Date: {businessLoan.date}</p>
+        </div>
+      </section>
+
+      {/* Schemes Tab */}
+      <section className="mb-10">
+        <h2 className="text-2xl font-semibold mb-4">Schemes</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {schemes.map(({ name, members, status, targetAmount, currentAmount, duration }, idx) => (
+            <div key={idx} className="bg-[#116466] rounded-lg p-6 shadow-lg">
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="text-xl font-semibold">{name}</h3>
+                <span className="text-sm bg-green-600 px-2 py-1 rounded">{status}</span>
+              </div>
+              <p className="mb-1">Members: {members}</p>
+              <div className="mb-3">
+                <p className="font-semibold">Progress</p>
+                <div className="w-full bg-gray-700 rounded-full h-4">
+                  <div
+                    className="bg-green-400 h-4 rounded-full"
+                    style={{ width: `${(currentAmount / targetAmount) * 100}%` }}
+                    aria-label={`Progress: ${(currentAmount / targetAmount) * 100}%`}
+                  />
+                </div>
+                <p className="text-sm mt-1">
+                  ₹{currentAmount.toLocaleString()} / ₹{targetAmount.toLocaleString()}
+                </p>
+              </div>
+              <p>Duration: {duration} Month{duration > 1 ? "s" : ""}</p>
+              <div className="mt-4 flex gap-4">
+                <button className="bg-blue-500 hover:bg-blue-600 rounded px-4 py-2 font-semibold">
+                  View Details
+                </button>
+                <button className="bg-green-500 hover:bg-green-600 rounded px-4 py-2 font-semibold">
+                  Contribute
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Profile Tab */}
+      <section className="bg-[#0e2d3c] rounded-lg p-6 shadow-lg max-w-3xl mx-auto">
+        <h2 className="text-2xl font-semibold mb-6">Profile</h2>
+        <div className="flex flex-col sm:flex-row items-center gap-6 mb-6">
+          <div className="w-24 h-24 rounded-full bg-gray-600 flex items-center justify-center text-3xl font-bold uppercase">
+            {profile.name.charAt(0)}
+          </div>
+          <div>
+            <p className="text-xl font-semibold">{profile.name}</p>
+            <p className="text-gray-300">{profile.email}</p>
+          </div>
+        </div>
+
+        <div className="mb-6">
+          <h3 className="font-semibold mb-2">Personal Information</h3>
+          <p><strong>Phone:</strong> {profile.phone}</p>
+          <p><strong>Address:</strong> {profile.address}</p>
+        </div>
+
+        <div>
+          <h3 className="font-semibold mb-4">Documents</h3>
+          <ul className="space-y-3">
+            {profile.documents.map(({ name, actions }, idx) => (
+              <li
+                key={idx}
+                className="flex justify-between items-center bg-[#116466] rounded-md p-3"
+              >
+                <span>{name}</span>
+                <div className="space-x-3">
+                  {actions.map((action) => (
+                    <button
+                      key={action}
+                      className="bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded text-sm"
+                    >
+                      {action}
+                    </button>
+                  ))}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="mt-6 flex gap-4 justify-center">
+          <button className="bg-yellow-500 hover:bg-yellow-600 rounded px-6 py-2 font-semibold">
+            Edit Profile
+          </button>
+          <button className="bg-red-600 hover:bg-red-700 rounded px-6 py-2 font-semibold">
+            Logout
+          </button>
+        </div>
+      </section>
     </div>
   );
-}
+};
+
+export default Dashboard;
