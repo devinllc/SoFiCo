@@ -18,7 +18,9 @@ app.use(express.static(path.join(__dirname, "public")));
 // Configure CORS
 app.use(cors({
     origin:['http://localhost:3000','http://localhost:3001','http://localhost:5173','http://localhost:5174'],
-    credentials: true
+    credentials: true,
+ methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH']
+
 }));
 
 app.get("/", (req, res) => {
