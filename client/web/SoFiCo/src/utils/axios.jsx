@@ -1,7 +1,11 @@
 import axios from 'axios';
 
-const instance = axios.create({
-  baseURL: 'https://so-fi-co.vercel.app'
+const api = axios.create({
+  baseURL: 'https://scftest-inky.vercel.app'
 });
 
-export default instance;
+export default api;
+
+export const addUser = (user) => {
+  return api.post("/user/create", user);
+};
