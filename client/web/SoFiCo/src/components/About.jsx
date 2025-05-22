@@ -2,7 +2,7 @@ import React from "react";
 
 function About() {
   return (
-    <section className="w-full py-8 bg-white flex flex-col items-center">
+    <section id="#about" className="w-full py-8 bg-white flex flex-col items-center min-h-screen">
       <div className="max-w-6xl w-full flex flex-col md:flex-row items-center justify-between px-4 gap-6">
         {/* Left: Content */}
         <div className="w-full md:w-1/2">

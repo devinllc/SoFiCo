@@ -64,7 +64,7 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0e2d3c] to-[#116466] p-4">
+    <div className="min-h-[85vh] flex items-center justify-center bg-gradient-to-br from-[#0e2d3c] to-[#116466] p-4">
       <div className="flex flex-col md:flex-row w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden bg-white transform transition-all duration-500 hover:scale-[1.02]">
         {/* Left Panel */}
         <div className="flex flex-col justify-center items-center w-full md:w-1/2 bg-gradient-to-br from-blue-400 to-blue-600 text-white px-8 py-12 relative overflow-hidden">
@@ -98,7 +98,7 @@ export default function AuthPage() {
             {!showRegister ? (
               <div className="animate-fade-in">
                 <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">Sign in</h2>
-                <form className="space-y-6" onSubmit={handleLoginSubmit}>
+                <form className="space-y-6">
                   <div className="space-y-4">
                     <input
                       type="email"
